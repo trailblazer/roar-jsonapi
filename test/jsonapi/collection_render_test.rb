@@ -57,6 +57,7 @@ class JsonapiCollectionRenderTest < MiniTest::Spec
                :links=>{"self"=>"http://comments/comment:4"}}},
            :links=>{"self"=>"http://Article/3"}}],
        :links=>{"self"=>"//articles"},
+       :meta=>{"count" => 3},
        :included=>
         [{:type=>"authors", :id=>"2", :links=>{"self"=>"http://authors/2"}},
          {:type=>"editors",
@@ -131,6 +132,7 @@ class JsonapiCollectionRenderTest < MiniTest::Spec
                :links=>{"self"=>"http://comments/comment:4"}}},
            :links=>{"self"=>"http://Article/3"}}],
        :links=>{"self"=>"//articles"},
+       :meta=>{"count" => 3}
       }
     )
   end
@@ -159,6 +161,9 @@ class JsonapiCollectionRenderTest < MiniTest::Spec
         "links" => {
           "self" => "//articles"
         },
+        "meta" => {
+          "count" => 0
+        }
       }
     }
 
