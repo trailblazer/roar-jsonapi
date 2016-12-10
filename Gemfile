@@ -1,0 +1,8 @@
+source 'http://rubygems.org'
+
+gemspec
+
+gem 'roar', github: 'trailblazer/roar', branch: 'master'
+
+gem 'minitest-line'
+gem 'pry'
