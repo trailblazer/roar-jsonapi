@@ -5,4 +5,5 @@ gemspec
 gem 'roar', github: 'trailblazer/roar', branch: 'master'
 
 gem 'minitest-line'
+gem 'minitest-reporters'
 gem 'pry'
