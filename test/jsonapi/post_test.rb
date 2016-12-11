@@ -35,7 +35,7 @@ class JsonapiPostTest < MiniTest::Spec
       subject.title.must_equal "Ember Hamster"
       subject.author.id.must_equal "9"
       subject.author.email.must_equal "9@nine.to"
-      # subject.author.name.must_equal nil
+      # subject.author.name.must_be_nil
 
       subject.comments.must_equal [Comment.new("2"), Comment.new("3")]
     end
@@ -68,7 +68,7 @@ class JsonapiPostTest < MiniTest::Spec
     subject { ArticleDecorator.new(Article.new(nil, nil, nil, nil, [])).from_json(post_article.to_json) }
 
     it do
-      subject.title.must_equal nil
+      subject.title.must_be_nil
     end
   end
 end
