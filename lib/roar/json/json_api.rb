@@ -35,7 +35,7 @@ module Roar
             def self.meta(options={}, &block)
               representable_attrs[:meta_representer] ||= begin
                 meta_representer = Class.new(Roar::Decorator)
-                meta_representer.include(Roar::JSON)
+                meta_representer.send :include, Roar::JSON
                 meta_representer
               end
               representable_attrs[:meta_representer].instance_exec(&block)
@@ -95,7 +95,7 @@ module Roar
 
           representable_attrs[:meta_representer] ||= begin
             meta_representer = Class.new(Roar::Decorator)
-            meta_representer.include(Roar::JSON)
+            meta_representer.send :include, Roar::JSON
             meta_representer
           end
           representable_attrs[:meta_representer].instance_exec(&block)
