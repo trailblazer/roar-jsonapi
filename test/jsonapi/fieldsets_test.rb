@@ -4,7 +4,7 @@ require 'json'
 
 class JSONAPIFieldsetsTest < Minitest::Spec
   Article = Struct.new(:id, :title, :summary, :comments, :author)
-  Comment = Struct.new(:id, :body, :good, :author)
+  Comment = Struct.new(:id, :body, :good, :comment_author)
   Author = Struct.new(:id, :name, :email)
 
   describe 'Single Resource Object With Options' do
@@ -25,7 +25,7 @@ class JSONAPIFieldsetsTest < Minitest::Spec
           property :good
         end
 
-        has_one :author do
+        has_one :comment_author, class: Comment do
           type :authors
 
           attributes do
@@ -100,7 +100,7 @@ class JSONAPIFieldsetsTest < Minitest::Spec
                   "good": true
                 },
                 "relationships": {
-                  "author": {
+                  "comment-author": {
                     "data": {
                       "type": "authors",
                       "id": "a:2"
@@ -116,7 +116,7 @@ class JSONAPIFieldsetsTest < Minitest::Spec
                   "good": false
                 },
                 "relationships": {
-                  "author": {
+                  "comment-author": {
                     "data": null
                   }
                 }
@@ -150,7 +150,7 @@ class JSONAPIFieldsetsTest < Minitest::Spec
                   "good": true
                 },
                 "relationships": {
-                  "author": {
+                  "comment-author": {
                     "data": {
                       "type": "authors",
                       "id": "a:2"
@@ -176,7 +176,7 @@ class JSONAPIFieldsetsTest < Minitest::Spec
                   "good": false
                 },
                 "relationships": {
-                  "author": {
+                  "comment-author": {
                     "data": null
                   }
                 }

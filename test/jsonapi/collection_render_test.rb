@@ -34,7 +34,7 @@ class JsonapiCollectionRenderTest < MiniTest::Spec
               "id": "editor:1"
             },
             "meta": {
-              "peer_reviewed": false
+              "peer-reviewed": false
             }
           },
           "comments": {
@@ -59,7 +59,7 @@ class JsonapiCollectionRenderTest < MiniTest::Spec
         },
         "meta": {
           "reviewers": ["Christian Bernstein"],
-          "reviewer_initials": "C.B."
+          "reviewer-initials": "C.B."
         }
       }, {
         "type": "articles",
@@ -81,7 +81,7 @@ class JsonapiCollectionRenderTest < MiniTest::Spec
           "editor": {
             "data": null,
             "meta": {
-              "peer_reviewed": false
+              "peer-reviewed": false
             }
           },
           "comments": {
@@ -103,7 +103,7 @@ class JsonapiCollectionRenderTest < MiniTest::Spec
         },
         "meta": {
           "reviewers": ["Christian Bernstein"],
-          "reviewer_initials": "C.B."
+          "reviewer-initials": "C.B."
         }
       }, {
         "type": "articles",
@@ -125,7 +125,7 @@ class JsonapiCollectionRenderTest < MiniTest::Spec
           "editor": {
             "data": null,
             "meta": {
-              "peer_reviewed": false
+              "peer-reviewed": false
             }
           },
           "comments": {
@@ -147,7 +147,7 @@ class JsonapiCollectionRenderTest < MiniTest::Spec
         },
         "meta": {
           "reviewers": ["Christian Bernstein"],
-          "reviewer_initials": "C.B."
+          "reviewer-initials": "C.B."
         }
       }],
       "links": {
@@ -237,7 +237,7 @@ class JsonapiCollectionRenderTest < MiniTest::Spec
               "id": "editor:1"
             },
             "meta": {
-              "peer_reviewed": false
+              "peer-reviewed": false
             }
           },
           "comments": {
@@ -262,7 +262,7 @@ class JsonapiCollectionRenderTest < MiniTest::Spec
         },
         "meta": {
           "reviewers": ["Christian Bernstein"],
-          "reviewer_initials": "C.B."
+          "reviewer-initials": "C.B."
         }
       }, {
         "type": "articles",
@@ -284,7 +284,7 @@ class JsonapiCollectionRenderTest < MiniTest::Spec
           "editor": {
             "data": null,
             "meta": {
-              "peer_reviewed": false
+              "peer-reviewed": false
             }
           },
           "comments": {
@@ -306,7 +306,7 @@ class JsonapiCollectionRenderTest < MiniTest::Spec
         },
         "meta": {
           "reviewers": ["Christian Bernstein"],
-          "reviewer_initials": "C.B."
+          "reviewer-initials": "C.B."
         }
       }, {
         "type": "articles",
@@ -328,7 +328,7 @@ class JsonapiCollectionRenderTest < MiniTest::Spec
           "editor": {
             "data": null,
             "meta": {
-              "peer_reviewed": false
+              "peer-reviewed": false
             }
           },
           "comments": {
@@ -350,7 +350,7 @@ class JsonapiCollectionRenderTest < MiniTest::Spec
         },
         "meta": {
           "reviewers": ["Christian Bernstein"],
-          "reviewer_initials": "C.B."
+          "reviewer-initials": "C.B."
         }
       }],
       "links": {

@@ -2,6 +2,18 @@ require 'roar/json'
 require 'roar/decorator'
 require 'set'
 
+require 'roar/json/json_api/member_name'
+
+module Roar
+  module JSON
+    module JSONAPI
+      DEFAULTS_AS = ->(name, _) {
+        { as: JSONAPI::MemberName.(name, strict: true) }
+      }
+    end
+  end
+end
+
 require 'roar/json/json_api/meta'
 require 'roar/json/json_api/declarative'
 require 'roar/json/json_api/for_collection'
@@ -22,6 +34,12 @@ module Roar
           self.representation_wrap = :data
 
           property :id, render_filter: ->(input, _options) { input.to_s }
+
+          defaults(&DEFAULTS_AS)
+
+          nested :attributes do
+            defaults(&DEFAULTS_AS)
+          end
 
           nested :relationships do
           end

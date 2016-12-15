@@ -28,7 +28,7 @@ class JsonapiRenderTest < MiniTest::Spec
               "type": "editors"
             },
             "meta": {
-              "peer_reviewed": false
+              "peer-reviewed": false
             }
           },
           "comments": {
@@ -86,7 +86,7 @@ class JsonapiRenderTest < MiniTest::Spec
       }],
       "meta": {
         "reviewers": ["Christian Bernstein"],
-        "reviewer_initials": "C.B."
+        "reviewer-initials": "C.B."
       }
     }))
   end
@@ -113,7 +113,7 @@ class JsonapiRenderTest < MiniTest::Spec
               "type": "editors"
             },
             "meta": {
-              "peer_reviewed": false
+              "peer-reviewed": false
             }
           },
           "comments": {
@@ -143,7 +143,7 @@ class JsonapiRenderTest < MiniTest::Spec
       },
       "meta": {
         "reviewers": ["Christian Bernstein"],
-        "reviewer_initials": "C.B."
+        "reviewer-initials": "C.B."
       }
     }))
   end
@@ -154,17 +154,17 @@ class JsonapiRenderTest < MiniTest::Spec
                              })
     hash['meta']['copyright'].must_equal('Nick Sutterer')
     hash['meta']['reviewers'].must_equal([])
-    hash['meta']['reviewer_initials'].must_equal('C.B.')
+    hash['meta']['reviewer-initials'].must_equal('C.B.')
   end
 
   it 'does not render additonal meta information if meta option is empty' do
     hash = decorator.to_hash('meta' => {})
     hash['meta']['copyright'].must_be_nil
     hash['meta']['reviewers'].must_equal(['Christian Bernstein'])
-    hash['meta']['reviewer_initials'].must_equal('C.B.')
+    hash['meta']['reviewer-initials'].must_equal('C.B.')
   end
 
-  describe 'Single Resource Object' do
+  describe 'Single Resource Object with simple attributes' do
     class DocumentSingleResourceObjectDecorator < Roar::Decorator
       include Roar::JSON::JSONAPI
       type :articles
@@ -202,5 +202,71 @@ class JsonapiRenderTest < MiniTest::Spec
 
     it { DocumentSingleResourceObjectDecorator.new(Article.new(1, 'My Article')).to_json.must_equal_json document }
     it { DocumentSingleResourceObjectDecorator.for_collection.new([Article.new(1, 'My Article')]).to_json.must_equal_json collection_document }
+  end
+
+  describe 'Single Resource Object with complex attributes' do
+    class VisualArtistDecorator < Roar::Decorator
+      include Roar::JSON::JSONAPI
+      type :visual_artists
+
+      attributes do
+        property :name
+        collection :known_aliases
+        property :movement
+        collection :noteable_works
+      end
+    end
+
+    Painter = Struct.new(:id, :name, :known_aliases, :movement, :noteable_works)
+
+    let(:document) {
+      %({
+        "data": {
+          "type": "visual-artists",
+          "id": "p1",
+          "attributes": {
+            "name": "Pablo Picasso",
+            "known-aliases": [
+              "Pablo Ruiz Picasso"
+            ],
+            "movement": "Cubism",
+            "noteable-works": [
+              "Kahnweiler",
+              "Guernica"
+            ]
+          }
+        }
+      })
+    }
+
+    let(:collection_document) {
+      %({
+        "data": [
+          {
+            "type": "visual-artists",
+            "id": "p1",
+            "attributes": {
+              "name": "Pablo Picasso",
+              "known-aliases": [
+                "Pablo Ruiz Picasso"
+              ],
+              "movement": "Cubism",
+              "noteable-works": [
+                "Kahnweiler",
+                "Guernica"
+              ]
+            }
+          }
+        ]
+      })
+    }
+
+    let(:painter) {
+      Painter.new('p1', 'Pablo Picasso', ['Pablo Ruiz Picasso'], 'Cubism',
+                  %w(Kahnweiler Guernica))
+    }
+
+    it { VisualArtistDecorator.new(painter).to_json.must_equal_json document }
+    it { VisualArtistDecorator.for_collection.new([painter]).to_json.must_equal_json collection_document }
   end
 end
