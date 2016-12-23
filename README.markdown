@@ -18,7 +18,7 @@ A minimal representation can be defined as follows.
 ```ruby
 require 'roar/json/json_api'
 
-module SongsRepresenter
+class SongsRepresenter < Roar::Decorator
   include Roar::JSON::JSONAPI
   type :songs
 
@@ -34,7 +34,7 @@ Properties of the represented model are defined in the root level.
 You can add links to `linked` models within the resource section.
 
 ```ruby
-module SongsRepresenter
+class SongsRepresenter < Roar::Decorator
   # ...
 
   has_one :composer
@@ -45,7 +45,7 @@ end
 Global `links` can be added using the familiar `::link` method (this is still WIP as the DSL is not final).
 
 ```ruby
-module SongsRepresenter
+class SongsRepresenter < Roar::Decorator
   # ...
 
   link "songs.album" do
@@ -62,7 +62,7 @@ end
 To add compound models into the document, use `::compound`.
 
 ```ruby
-module SongsRepresenter
+class SongsRepresenter < Roar::Decorator
   # ...
 
 compound do
@@ -84,7 +84,7 @@ Meta information can be included into rendered singular and collection documents
 You can define meta information on your collection object and then let Roar compile it.
 
 ```ruby
-module SongsRepresenter
+class SongsRepresenter < Roar::Decorator
   # ..
 
   meta toplevel: true do
@@ -111,7 +111,7 @@ collection.to_json("meta" => {page: params["page"], total: collection.size})
 Both methods work for singular documents too.
 
 ```ruby
-module SongsRepresenter
+class SongsRepresenter < Roar::Decorator
   # ..
 
   meta do
