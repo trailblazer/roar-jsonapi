@@ -239,8 +239,8 @@ module Roar
 
         # Go through {"album"=>{"title"=>"Hackers"}, "musicians"=>[{"name"=>"Eddie Van Halen"}, ..]} from linked:
         # and wrap every item in an array.
-        def render_included(hash)
-          return unless compound = hash.delete('included')
+        def render_included(res)
+          return unless compound = res.delete('included')
 
           compound.collect { |_name, hash|
             if hash.is_a?(::Hash)
