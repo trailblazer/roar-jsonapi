@@ -21,3 +21,9 @@ Style/LambdaCall:
 
 Metrics/LineLength:
   Enabled: false
+
+Style/PredicateName:
+  NameWhitelist:
+    - is_a?
+    - has_one
+    - has_many
