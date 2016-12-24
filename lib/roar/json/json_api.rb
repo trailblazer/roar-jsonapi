@@ -168,11 +168,10 @@ module Roar
       # {:include=>[:id, :title, :author, :included],
       #  :included=>{:include=>[:author], :author=>{:include=>[:email, :id]}}}
       module Options
-        # TODO: make sure we don't change original params options.
         Include = ->(options, _decorator) do
-          return options unless (included = options[:include])
-          included << :id # FIXME: changes original options.
-          return options unless options[:fields]
+          return options unless options[:include]
+          included = options[:include] | [:id]
+          return options.merge(include: included) unless options[:fields]
 
           internal_options = {}
           internal_options[:include] = [*included, :included]
