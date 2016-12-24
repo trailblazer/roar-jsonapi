@@ -176,7 +176,7 @@ module Roar
         Include = ->(options, _decorator) do
           return options unless included = options[:include]
           included << :id # FIXME: changes original options.
-          return options unless fields = options[:fields]
+          return options unless options[:fields]
 
           internal_options = {}
           internal_options[:include] = [*included, :included]
