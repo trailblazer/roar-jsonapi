@@ -182,7 +182,6 @@ module Roar
           fields.each do |k, v|
             internal_options[:included][k] = { include: v + [:id] }
           end
-          # pp internal_options
           options.merge(internal_options)
         end
       end

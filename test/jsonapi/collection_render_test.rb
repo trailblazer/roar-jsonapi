@@ -10,8 +10,7 @@ class JsonapiCollectionRenderTest < MiniTest::Spec
   let (:decorator) { ArticleDecorator.for_collection.new([article, article2, article3]) }
 
   it "renders full document" do
-    pp hash = decorator.to_hash
-
+    hash = decorator.to_hash
     hash.must_equal(
       {:data=>
         [{:type=>"articles",

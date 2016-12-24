@@ -8,9 +8,7 @@ class JsonapiRenderTest < MiniTest::Spec
   let (:decorator) { ArticleDecorator.new(article) }
 
   it "renders full document" do
-    pp hash = decorator.to_hash
-
-# puts hash.to_json
+    hash = decorator.to_hash
     hash.must_equal(
     {
       :data=>
