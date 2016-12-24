@@ -174,7 +174,7 @@ module Roar
       module Options
         # TODO: make sure we don't change original params options.
         Include = ->(options, _decorator) do
-          return options unless included = options[:include]
+          return options unless (included = options[:include])
           included << :id # FIXME: changes original options.
           return options unless options[:fields]
 
@@ -240,7 +240,7 @@ module Roar
         # Go through {"album"=>{"title"=>"Hackers"}, "musicians"=>[{"name"=>"Eddie Van Halen"}, ..]} from linked:
         # and wrap every item in an array.
         def render_included(res)
-          return unless compound = res.delete('included')
+          return unless (compound = res.delete('included'))
 
           compound.collect { |_name, hash|
             if hash.is_a?(::Hash)
