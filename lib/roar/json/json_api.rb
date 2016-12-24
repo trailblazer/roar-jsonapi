@@ -22,12 +22,12 @@ module Roar
       end
 
       module ForCollection
-        def collection_representer # FIXME: cache.
-          single = self # e.g. Song::Representer
+        def collection_representer!(_options) # FIXME: cache.
+          singular = self # e.g. Song::Representer
 
           # this basically does Module.new { include Hash::Collection .. }
           nested_builder.(_base: default_nested_class, _features: [Roar::JSON, Roar::Hypermedia], _block: proc do
-            collection :to_a, decorator: single # render/parse every item using the single representer.
+            collection :to_a, decorator: singular # render/parse every item using the singular representer.
 
             # toplevel links are defined here, as in
             # link(:self) { .. }
@@ -69,10 +69,6 @@ module Roar
               meta
             end
           end)
-        end
-
-        def for_collection # FIXME: same API as representable. TODO: we could use ::collection_representer! here.
-          @collection_representer ||= collection_representer
         end
       end
 
