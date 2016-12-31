@@ -58,18 +58,18 @@ class JSONAPIFieldsetsTest < Minitest::Spec
           include:  [:id, :title, :included],
           included: {include: [:comments]}).
         must_equal Hash[{
-          :data=>
-            {:type=>"articles",
-             :id=>"1",
-             :attributes=>{"title"=>"My Article"},
+          'data'=>
+            {'type'=>"articles",
+             'id'=>"1",
+             'attributes'=>{"title"=>"My Article"},
             },
-           :included=>
-            [{:type=>"comments",
-              :id=>"c:1",
-              :attributes=>{"body"=>"Cool!", "good"=>true}},
-             {:type=>"comments",
-              :id=>"c:2",
-              :attributes=>{"body"=>"Nah", "good"=>false}}
+           'included'=>
+            [{'type'=>"comments",
+              'id'=>"c:1",
+              'attributes'=>{"body"=>"Cool!", "good"=>true}},
+             {'type'=>"comments",
+              'id'=>"c:2",
+              'attributes'=>{"body"=>"Nah", "good"=>false}}
             ]
         }]
         # must_equal document.to_json
@@ -81,13 +81,13 @@ class JSONAPIFieldsetsTest < Minitest::Spec
           include:  [:title, :included],
           included: {include: [:author]}).
         must_equal Hash[{
-          :data=>
-            {:type=>"articles",
-             :id=>"1",
-             :attributes=>{"title"=>"My Article"},
+          'data'=>
+            {'type'=>"articles",
+             'id'=>"1",
+             'attributes'=>{"title"=>"My Article"},
             },
-           :included=>
-            [{:type=>"author", :id=>"a:1", :attributes=>{"name"=>"Celso", "email"=>"celsito@trb.to"}}]
+           'included'=>
+            [{'type'=>"author", 'id'=>"a:1", 'attributes'=>{"name"=>"Celso", "email"=>"celsito@trb.to"}}]
         }]
         # must_equal document.to_json
     end
@@ -99,13 +99,13 @@ class JSONAPIFieldsetsTest < Minitest::Spec
             include:  [:title, :included],
             included: {include: [:author]}).
           must_equal Hash[{
-            :data=>[
-              {:type=>"articles",
-               :id=>"1",
-               :attributes=>{"title"=>"My Article"},
+            'data'=>[
+              {'type'=>"articles",
+               'id'=>"1",
+               'attributes'=>{"title"=>"My Article"},
               }],
-            :included=>
-              [{:type=>"author", :id=>"a:1", :attributes=>{"name"=>"Celso", "email"=>"celsito@trb.to"}}]
+            'included'=>
+              [{'type'=>"author", 'id'=>"a:1", 'attributes'=>{"name"=>"Celso", "email"=>"celsito@trb.to"}}]
           }]
       end
 
@@ -117,13 +117,13 @@ class JSONAPIFieldsetsTest < Minitest::Spec
             fields: {author: [:email]}
           ).
           must_equal Hash[{
-            :data=>[
-              {:type=>"articles",
-               :id=>"1",
-               :attributes=>{"title"=>"My Article"},
+            'data'=>[
+              {'type'=>"articles",
+               'id'=>"1",
+               'attributes'=>{"title"=>"My Article"},
               }],
-            :included=>
-              [{:type=>"author", :id=>"a:1", :attributes=>{"email"=>"celsito@trb.to"}}]
+            'included'=>
+              [{'type'=>"author", 'id'=>"a:1", 'attributes'=>{"email"=>"celsito@trb.to"}}]
           }]
       end
     end

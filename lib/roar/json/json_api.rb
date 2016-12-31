@@ -43,18 +43,18 @@ module Roar
           type_and_id_seen = Set.new
 
           included = included.select { |object|
-            type_and_id_seen.add? [object[:type], object[:id]]
+            type_and_id_seen.add? [object['type'], object['id']]
           }
 
-          document[:included] = included
+          document['included'] = included
         end
 
         Links = ->(document, links, _options) do
-          document[:links] = links if links.any?
+          document['links'] = links if links.any?
         end
 
         Meta = ->(document, meta, _options) do
-          document[:meta] = meta if meta.any?
+          document['meta'] = meta if meta.any?
         end
       end
     end

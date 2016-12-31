@@ -32,13 +32,13 @@ module Roar
           included      = render_included(res)
 
           document = {
-            data: data = {
-              type: self.class.type,
-              id:   res.delete('id').to_s
+            'data' => data = {
+              'type' => self.class.type,
+              'id'   => res.delete('id').to_s
             }
           }
-          data[:attributes]    = res unless res.empty?
-          data[:relationships] = relationships if relationships && relationships.any?
+          data['attributes']    = res unless res.empty?
+          data['relationships'] = relationships if relationships && relationships.any?
 
           Fragment::Links.(data, links, options)
           Fragment::Included.(document, included, options)
@@ -57,11 +57,7 @@ module Roar
           return {} unless hash['data'] # DISCUSS: Is failing silently here a good idea?
           # hash: {"data"=>{"type"=>"articles", "attributes"=>{"title"=>"Ember Hamster"}, "relationships"=>{"author"=>{"data"=>{"type"=>"people", "id"=>"9"}}}}}
           attributes = hash['data']['attributes'] || {}
-          attributes['relationships'] = {}
-
-          hash['data'].fetch('relationships', []).each do |rel, fragment|
-            attributes['relationships'][rel] = fragment['data'] # DISCUSS: we could use a relationship representer here (but only if needed elsewhere).
-          end
+          attributes['relationships'] = hash['data'].fetch('relationships', {})
 
           # this is the format the object representer understands.
           attributes # {"title"=>"Ember Hamster", "author"=>{"type"=>"people", "id"=>"9"}}
@@ -74,9 +70,9 @@ module Roar
 
           compound.collect { |_name, hash|
             if hash.is_a?(::Hash)
-              hash[:data]
+              hash['data']
             else
-              hash.collect { |item| item[:data] }
+              hash.collect { |item| item['data'] }
             end
           }.flatten
         end
@@ -89,17 +85,6 @@ module Roar
         end
 
         def render_relationships(res)
-          (res['relationships'] || []).each do |name, hash|
-            if hash.is_a?(::Hash)
-              hash[:links] = hash[:data].delete(:links) if hash[:data].key? :links
-            else # hash => [{data: {}}, ..]
-              res['relationships'][name] = collection = { data: [] }
-              hash.each do |hsh|
-                collection[:links] = hsh[:data].delete(:links) if hsh[:data].key? :links
-                collection[:data] << hsh[:data]
-              end
-            end
-          end
           res.delete('relationships')
         end
       end

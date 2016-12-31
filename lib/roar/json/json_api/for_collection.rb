@@ -26,11 +26,11 @@ module Roar
               collection = hash['to_a']
               meta       = render_meta(options)
 
-              document = { data: [] }
+              document = { 'data' => [] }
               included = []
               collection.each do |single|
-                document[:data] << single[:data]
-                included += single.delete(:included) || []
+                document['data'] << single['data']
+                included += single.delete('included') || []
               end
 
               Fragment::Links.(document, Renderer::Links.new.(hash, {}), options)

@@ -38,14 +38,9 @@ module Roar
 
         def has_relationship(name, options = {}, &block)
           # every nested representer is a full-blown JSONAPI representer.
-          dfn        = nil
-          collection = options.fetch(:collection)
-
           nested(:included, inherit: true) do
-            dfn = property(name, collection: collection) {
+            property(name, collection: options[:collection]) {
               include Roar::JSON::JSONAPI
-              include Roar::JSON
-              include Roar::Hypermedia
 
               instance_exec(&block)
 
@@ -55,15 +50,26 @@ module Roar
             }
           end
 
-          property_representer = Class.new(dfn[:extend].(nil))
-          property_representer.class_eval do
+          resource_identifier_representer = Class.new(Roar::Decorator)
+          resource_identifier_representer.class_eval do
+            include Roar::JSON
+            include Roar::Hypermedia
+            extend JSONAPI::Declarative
+
+            instance_exec(&block)
+
             def to_hash(_options)
-              super(include: [:type, :id, :links])
+              hash = { 'type' => self.class.type }.merge(super(include: [:id])) # TODO: add :meta
+              hash['id'] = hash['id'].to_s
+              hash
             end
           end
 
           nested(:relationships, inherit: true) do
-            property(name, options.merge(decorator: property_representer))
+            nested(:"#{name}_relationship", as: name, skip_render: ->(_options) { !send(name) }) do
+              property name, options.merge(as:        :data,
+                                           decorator: resource_identifier_representer)
+            end
           end
         end
       end
