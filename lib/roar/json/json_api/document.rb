@@ -77,13 +77,6 @@ module Roar
           }.flatten
         end
 
-        def render_meta(options)
-          representer = representable_attrs[:meta_representer]
-          meta        = representer ? representer.new(represented).to_hash : {}
-          meta.merge!(options['meta']) if options['meta']
-          meta
-        end
-
         def render_relationships(res)
           res.delete('relationships')
         end

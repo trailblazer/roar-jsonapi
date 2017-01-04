@@ -10,92 +10,96 @@ class JsonapiRenderTest < MiniTest::Spec
   it "renders full document" do
     hash = decorator.to_hash
     hash.must_equal(
-    {
-      'data'=>
-        {
-          'type'=>"articles",
-          'id'=>"1",
-          'attributes'=>{"title"=>"Health walk"},
-          'relationships'=>
-            {"author"=>
-              {'data'=>{'type'=>"authors", 'id'=>"2"}},
-             "editor"=>
-              {'data'=>{'type'=>"editors", 'id'=>"editor:1"}},
-             "comments"=>
-              {'data'=>
-                [
-                  {
-                    'type'=>"comments",
-                    'id'=>"comment:1"
-                  },
-                  {
-                    'type'=>"comments",
-                    'id'=>"comment:2"
-                  }
-                ]
-              }
-            },
-          'links'=>{"self"=>"http://Article/1"}
-        },
-      'included'=>
-        [
-          {
-            'type'=>"authors",
-            'id'=>"2",
-            'links'=>{"self"=>"http://authors/2"}
-          },
-          {
-            'type'=>"editors",
-            'id'=>"editor:1"
-          },
-          {
-            'type'=>"comments",
-            'id'=>"comment:1",
-            'attributes'=>{"body"=>"Ice and Snow"},
-            'links'=>{"self"=>"http://comments/comment:1"}
-          },
-          {
-            'type'=>"comments",
-            'id'=>"comment:2",
-            'attributes'=>{"body"=>"Red Stripe Skank"},
-            'links'=>{"self"=>"http://comments/comment:2"}
+      'data'     => {
+        'type'          => 'articles',
+        'id'            => '1',
+        'attributes'    => { 'title' => 'Health walk' },
+        'relationships' => {
+          'author'   => {
+            'data'  => { 'type' => 'authors', 'id' => '2' },
+            'links' => {
+              'self'    => '/articles/1/relationships/author',
+              'related' => '/articles/1/author'
             }
-          ],
-        'meta'=>{"reviewers"=>["Christian Bernstein"], "reviewer_initials"=>"C.B."}
-        })
-
+          },
+          'editor'   => {
+            'data' => { 'type' => 'editors', 'id' => 'editor:1' },
+            'meta' => { 'peer_reviewed' => false }
+          },
+          'comments' => {
+            'data'  => [
+              { 'type' => 'comments', 'id' => 'comment:1' },
+              { 'type' => 'comments', 'id' => 'comment:2' }
+            ],
+            'links' => {
+              'self'    => '/articles/1/relationships/comments',
+              'related' => '/articles/1/comments'
+            },
+            'meta'  => { 'comment-count' => 5 }
+          }
+        },
+        'links'         => { 'self' => 'http://Article/1' }
+      },
+      'included' => [
+        {
+          'type'  => 'authors',
+          'id'    => '2',
+          'links' => { 'self' => 'http://authors/2' }
+        },
+        {
+          'type' => 'editors',
+          'id'   => 'editor:1'
+        },
+        {
+          'type'       => 'comments',
+          'id'         => 'comment:1',
+          'attributes' => { 'body' => 'Ice and Snow' },
+          'links'      => { 'self' => 'http://comments/comment:1' }
+        },
+        {
+          'type'       => 'comments',
+          'id'         => 'comment:2',
+          'attributes' => { 'body' => 'Red Stripe Skank' },
+          'links'      => { 'self' => 'http://comments/comment:2' }
+        }
+      ],
+      'meta'     => { 'reviewers' => ['Christian Bernstein'], 'reviewer_initials' => 'C.B.' }
+    )
   end
 
   it "included: false suppresses compound docs" do
     decorator.to_hash(included: false).must_equal(
-      {
-        'data'=>
-          {
-            'type'=>"articles",
-             'id'=>"1",
-             'attributes'=>{"title"=>"Health walk"},
-             'relationships'=>
-              {"author"=>
-                {'data'=>{'type'=>"authors", 'id'=>"2"}},
-               "editor"=>
-                {'data'=>{'type'=>"editors", 'id'=>"editor:1"}},
-               "comments"=>
-                {'data'=>
-                  [
-                    {
-                      'type'=>"comments",
-                      'id'=>"comment:1"
-                    },
-                    {
-                      'type'=>"comments",
-                      'id'=>"comment:2"
-                    }
-                  ]}
-                 },
-             'links'=>{"self"=>"http://Article/1"}
+      'data' => {
+        'type'          => 'articles',
+        'id'            => '1',
+        'attributes'    => { 'title' => 'Health walk' },
+        'relationships' => {
+          'author'   => {
+            'data'  => { 'type' => 'authors', 'id' => '2' },
+            'links' => {
+              'self'    => '/articles/1/relationships/author',
+              'related' => '/articles/1/author'
+            }
+          },
+          'editor'   => {
+            'data' => { 'type' => 'editors', 'id' => 'editor:1' },
+            'meta' => { 'peer_reviewed' => false }
+          },
+          'comments' => {
+            'data'  => [
+              { 'type' => 'comments', 'id' => 'comment:1' },
+              { 'type' => 'comments', 'id' => 'comment:2' }
+            ],
+            'links' => {
+              'self'    => '/articles/1/relationships/comments',
+              'related' => '/articles/1/comments'
+            },
+            'meta'  => { 'comment-count' => 5 }
+          }
         },
-        'meta'=>{"reviewers"=>["Christian Bernstein"], "reviewer_initials"=>"C.B."}
-      }
+        'links'         => { 'self' => 'http://Article/1' }
+      },
+      'meta' => { 'reviewers' => ['Christian Bernstein'], 'reviewer_initials' => 'C.B.' }
     )
   end
 

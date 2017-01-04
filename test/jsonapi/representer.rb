@@ -57,6 +57,11 @@ class ArticleDecorator < Roar::Decorator
   has_one :author, class: Author, populator: ::Representable::FindOrInstantiate do # populator is for parsing, only.
     type :authors
 
+    relationship do
+      link(:self)     { "/articles/#{represented.id}/relationships/author" }
+      link(:related)  { "/articles/#{represented.id}/author" }
+    end
+
     property :id
     property :email
     link(:self) { "http://authors/#{represented.id}" }
@@ -65,6 +70,12 @@ class ArticleDecorator < Roar::Decorator
   has_one :editor do
     type :editors
 
+    relationship do
+      meta do
+        property :peer_reviewed, getter: ->(_) { false }
+      end
+    end
+
     property :id
     property :email
     # No self link for editors because we want to make sure the :links option does not appear in the hash.
@@ -72,6 +83,15 @@ class ArticleDecorator < Roar::Decorator
 
   has_many :comments, class: Comment, populator: ::Representable::FindOrInstantiate do
     type :comments
+
+    relationship do
+      link(:self)     { "/articles/#{represented.id}/relationships/comments" }
+      link(:related)  { "/articles/#{represented.id}/comments" }
+
+      meta do
+        property :count, as: 'comment-count'
+      end
+    end
 
     property :id
     property :body

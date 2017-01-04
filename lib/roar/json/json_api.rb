@@ -2,6 +2,7 @@ require 'roar/json'
 require 'roar/decorator'
 require 'set'
 
+require 'roar/json/json_api/meta'
 require 'roar/json/json_api/declarative'
 require 'roar/json/json_api/for_collection'
 require 'roar/json/json_api/document'
@@ -13,6 +14,7 @@ module Roar
         base.class_eval do
           include Roar::JSON
           include Roar::Hypermedia
+          include JSONAPI::Meta
           extend JSONAPI::Declarative
           extend JSONAPI::ForCollection
           include JSONAPI::Document

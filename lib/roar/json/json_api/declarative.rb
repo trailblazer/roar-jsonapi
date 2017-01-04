@@ -16,15 +16,11 @@ module Roar
         end
 
         def meta(options = {}, &block)
-          return for_collection.meta(name, &block) if options[:toplevel]
-
-          representable_attrs[:meta_representer] ||= begin
-            meta_representer = Class.new(Roar::Decorator)
-            meta_representer.send :include, Roar::JSON
-            meta_representer
-          end
-          representable_attrs[:meta_representer].instance_exec(&block)
+          return super(&block) unless options[:toplevel]
+          for_collection.meta(&block)
         end
+
+        def relationship(options = {}, &block); end
 
         def has_one(name, options = {}, &block)
           has_relationship(name, options.merge(collection: false), &block)
@@ -54,12 +50,21 @@ module Roar
           resource_identifier_representer.class_eval do
             include Roar::JSON
             include Roar::Hypermedia
+            include JSONAPI::Meta
             extend JSONAPI::Declarative
+
+            def self.relationship_block
+              @relationship_block ||= -> {}
+            end
+
+            def self.relationship(&block)
+              @relationship_block = block
+            end
 
             instance_exec(&block)
 
             def to_hash(_options)
-              hash = { 'type' => self.class.type }.merge(super(include: [:id])) # TODO: add :meta
+              hash = { 'type' => self.class.type }.merge(super(include: [:id, :meta]))
               hash['id'] = hash['id'].to_s
               hash
             end
@@ -67,8 +72,25 @@ module Roar
 
           nested(:relationships, inherit: true) do
             nested(:"#{name}_relationship", as: name, skip_render: ->(_options) { !send(name) }) do
+              include Roar::JSON
+              include Roar::Hypermedia
+              include JSONAPI::Meta
+
               property name, options.merge(as:        :data,
                                            decorator: resource_identifier_representer)
+
+              instance_exec(&resource_identifier_representer.relationship_block)
+
+              def to_hash(*)
+                hash  = super
+                links = Renderer::Links.new.(hash, {})
+                meta  = render_meta({})
+
+                Fragment::Links.(hash, links, {})
+                Fragment::Meta.(hash, meta, {})
+
+                hash
+              end
             end
           end
         end
