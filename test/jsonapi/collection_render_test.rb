@@ -1,7 +1,6 @@
 require "test_helper"
 require "roar/json/json_api"
 require "json"
-require "jsonapi/representer"
 
 class JsonapiCollectionRenderTest < MiniTest::Spec
   let (:article) { Article.new(1, "Health walk", Author.new(2), Author.new("editor:1"), [Comment.new("comment:1", "Ice and Snow"),Comment.new("comment:2", "Red Stripe Skank")])}
@@ -40,7 +39,8 @@ class JsonapiCollectionRenderTest < MiniTest::Spec
                             'meta' => { 'comment-count' => 5 }
                           }
                         },
-                        'links'         => { 'self' => 'http://Article/1' }
+                        'links'         => { 'self' => 'http://Article/1' },
+                        'meta'          => { 'reviewers' => ['Christian Bernstein'], 'reviewer_initials' => 'C.B.' }
                       },
                       {
                         'type'          => 'articles',
@@ -69,7 +69,8 @@ class JsonapiCollectionRenderTest < MiniTest::Spec
                             'meta' => { 'comment-count' => 5 }
                           }
                         },
-                        'links'         => { 'self' => 'http://Article/2' }
+                        'links'         => { 'self' => 'http://Article/2' },
+                        'meta'          => { 'reviewers' => ['Christian Bernstein'], 'reviewer_initials' => 'C.B.' }
                       },
                       {
                         'type'          => 'articles',
@@ -98,7 +99,8 @@ class JsonapiCollectionRenderTest < MiniTest::Spec
                             'meta' => { 'comment-count' => 5 }
                           }
                         },
-                        'links'         => { 'self' => 'http://Article/3' }
+                        'links'         => { 'self' => 'http://Article/3' },
+                        'meta'          => { 'reviewers' => ['Christian Bernstein'], 'reviewer_initials' => 'C.B.' }
                       }
                     ],
                     'links'    => { 'self' => '//articles' },
@@ -176,7 +178,8 @@ class JsonapiCollectionRenderTest < MiniTest::Spec
                             'meta' => { 'comment-count' => 5 }
                           }
                         },
-                        'links'         => { 'self' => 'http://Article/1' }
+                        'links'         => { 'self' => 'http://Article/1' },
+                        'meta'          => { 'reviewers' => ['Christian Bernstein'], 'reviewer_initials' => 'C.B.' }
                       },
                       {
                         'type'          => 'articles',
@@ -205,7 +208,8 @@ class JsonapiCollectionRenderTest < MiniTest::Spec
                             'meta' => { 'comment-count' => 5 }
                           }
                         },
-                        'links'         => { 'self' => 'http://Article/2' }
+                        'links'         => { 'self' => 'http://Article/2' },
+                        'meta'          => { 'reviewers' => ['Christian Bernstein'], 'reviewer_initials' => 'C.B.' }
                       },
                       {
                         'type'          => 'articles',
@@ -234,7 +238,8 @@ class JsonapiCollectionRenderTest < MiniTest::Spec
                             'meta' => { 'comment-count' => 5 }
                           }
                         },
-                        'links'         => { 'self' => 'http://Article/3' }
+                        'links'         => { 'self' => 'http://Article/3' },
+                        'meta'          => { 'reviewers' => ['Christian Bernstein'], 'reviewer_initials' => 'C.B.' }
                       }
                     ],
                     'links' => { 'self' => '//articles' },

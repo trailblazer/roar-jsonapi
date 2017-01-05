@@ -17,6 +17,42 @@ Comment = Struct.new(:id, :body) do
   end
 end
 
+class AuthorDecorator < Roar::Decorator
+  include Roar::JSON::JSONAPI
+  type :authors
+
+  relationship do
+    link(:self)     { "/articles/#{represented.id}/relationships/author" }
+    link(:related)  { "/articles/#{represented.id}/author" }
+  end
+
+  attributes do
+    property :email
+  end
+
+  link(:self) { "http://authors/#{represented.id}" }
+end
+
+class CommentDecorator < Roar::Decorator
+  include Roar::JSON::JSONAPI
+  type :comments
+
+  relationship do
+    link(:self)     { "/articles/#{represented.id}/relationships/comments" }
+    link(:related)  { "/articles/#{represented.id}/comments" }
+
+    meta do
+      property :count, as: 'comment-count'
+    end
+  end
+
+  attributes do
+    property :body
+  end
+
+  link(:self) { "http://comments/#{represented.id}" }
+end
+
 class ArticleDecorator < Roar::Decorator
   include Roar::JSON::JSONAPI
   type :articles
@@ -34,9 +70,9 @@ class ArticleDecorator < Roar::Decorator
     property :count
   end
 
-  # attributes: {}
-  property :id
-  property :title
+  attributes do
+    property :title
+  end
 
   meta do
     collection :reviewers
@@ -54,18 +90,8 @@ class ArticleDecorator < Roar::Decorator
   link(:self) { "http://#{represented.class}/#{represented.id}" }
 
   # relationships
-  has_one :author, class: Author, populator: ::Representable::FindOrInstantiate do # populator is for parsing, only.
-    type :authors
-
-    relationship do
-      link(:self)     { "/articles/#{represented.id}/relationships/author" }
-      link(:related)  { "/articles/#{represented.id}/author" }
-    end
-
-    property :id
-    property :email
-    link(:self) { "http://authors/#{represented.id}" }
-  end
+  has_one :author, class: Author, decorator: AuthorDecorator,
+    populator: ::Representable::FindOrInstantiate # populator is for parsing, only.
 
   has_one :editor do
     type :editors
@@ -76,25 +102,12 @@ class ArticleDecorator < Roar::Decorator
       end
     end
 
-    property :id
-    property :email
+    attributes do
+      property :email
+    end
     # No self link for editors because we want to make sure the :links option does not appear in the hash.
   end
 
-  has_many :comments, class: Comment, populator: ::Representable::FindOrInstantiate do
-    type :comments
-
-    relationship do
-      link(:self)     { "/articles/#{represented.id}/relationships/comments" }
-      link(:related)  { "/articles/#{represented.id}/comments" }
-
-      meta do
-        property :count, as: 'comment-count'
-      end
-    end
-
-    property :id
-    property :body
-    link(:self) { "http://comments/#{represented.id}" }
-  end
+  has_many :comments, class: Comment, decorator: CommentDecorator,
+    populator: ::Representable::FindOrInstantiate
 end

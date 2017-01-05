@@ -1,7 +1,6 @@
 require "test_helper"
 require "roar/json/json_api"
 require "json"
-require "jsonapi/representer"
 
 class JsonapiRenderTest < MiniTest::Spec
   let (:article) { Article.new(1, "Health walk", Author.new(2), Author.new("editor:1"), [Comment.new("comment:1", "Ice and Snow"),Comment.new("comment:2", "Red Stripe Skank")]) }
@@ -124,18 +123,19 @@ class JsonapiRenderTest < MiniTest::Spec
       include Roar::JSON::JSONAPI
       type :articles
 
-      property :id
-      property :title
+      attributes do
+        property :title
+      end
     end
 
     let(:document) {
       {
         "data" => {
-          "type" => "articles",
           "id" => "1",
           "attributes" => {
             "title" => "My Article"
-          }
+          },
+          "type" => "articles"
         }
       }
     }

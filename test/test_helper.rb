@@ -8,3 +8,5 @@ require 'roar/json/json_api'
 
 require 'representable/debug'
 require 'pp'
+
+require_relative 'jsonapi/representer'

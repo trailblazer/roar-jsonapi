@@ -1,7 +1,6 @@
 require "test_helper"
 require "roar/json/json_api"
 require "json"
-require "jsonapi/representer"
 
 class JSONAPIFieldsetsTest < Minitest::Spec
   Article = Struct.new(:id, :title, :summary, :comments, :author)
@@ -15,24 +14,27 @@ class JSONAPIFieldsetsTest < Minitest::Spec
       include Roar::JSON::JSONAPI
       type :articles
 
-      property :id
-      property :title
-      property :summary
+      attributes do
+        property :title
+        property :summary
+      end
 
       has_many :comments do
         type :comments
 
-        property :id
-        property :body
-        property :good
+        attributes do
+          property :body
+          property :good
+        end
       end
 
       has_one :author do
         type :author
 
-        property :id
-        property :name
-        property :email
+        attributes do
+          property :name
+          property :email
+        end
       end
     end
 
@@ -40,14 +42,16 @@ class JSONAPIFieldsetsTest < Minitest::Spec
 
     it "includes scalars" do
       DocumentSingleResourceObjectDecorator.new(article).
-        to_json(include: [:title]).
+        to_json(attributes: { include: [:title] },
+          included: { include: []},
+          relationships: { include: []}).
         must_equal( {
           "data" => {
-            "type" => "articles",
             "id" => "1",
             "attributes" => {
               "title" => "My Article"
-            }
+            },
+            "type" => "articles"
           }
         }.to_json )
     end
@@ -55,8 +59,9 @@ class JSONAPIFieldsetsTest < Minitest::Spec
     it "includes compound objects" do
       DocumentSingleResourceObjectDecorator.new(article).
         to_hash(
-          include:  [:id, :title, :included],
-          included: {include: [:comments]}).
+          attributes: { include:  [:id, :title] },
+          included: {include: [:comments]},
+          relationships: { include: []}).
         must_equal Hash[{
           'data'=>
             {'type'=>"articles",
@@ -77,9 +82,9 @@ class JSONAPIFieldsetsTest < Minitest::Spec
 
     it "includes other compound objects" do
       DocumentSingleResourceObjectDecorator.new(article).
-        to_hash(
-          include:  [:title, :included],
-          included: {include: [:author]}).
+        to_hash(attributes: { include: [:title] },
+          included: {include: [:author]},
+          relationships: { include: []}).
         must_equal Hash[{
           'data'=>
             {'type'=>"articles",
@@ -95,9 +100,9 @@ class JSONAPIFieldsetsTest < Minitest::Spec
     describe "collection" do
       it "supports :includes" do
         DocumentSingleResourceObjectDecorator.for_collection.new([article]).
-          to_hash(
-            include:  [:title, :included],
-            included: {include: [:author]}).
+          to_hash(attributes: { include: [:title] },
+            included: {include: [:author]},
+            relationships: { include: []}).
           must_equal Hash[{
             'data'=>[
               {'type'=>"articles",
@@ -111,10 +116,12 @@ class JSONAPIFieldsetsTest < Minitest::Spec
 
       # include: ROAR API
       it "blaaaaaaa" do
+        skip 'rework included API'
         DocumentSingleResourceObjectDecorator.for_collection.new([article]).
           to_hash(
-            include:  [:title, :author],
-            fields: {author: [:email]}
+            attributes: { include: [:title ] },
+            included: { include: { author: [:email]}},
+            relationships: { include: [] }
           ).
           must_equal Hash[{
             'data'=>[
@@ -134,27 +141,28 @@ class JSONAPIFieldsetsTest < Minitest::Spec
       include Roar::JSON::JSONAPI
       type :articles
 
-      property :id
-      property :title
-      property :summary
+      attributes do
+        property :title
+        property :summary
+      end
     end
 
     let(:document) {
       {
         "data" => [
           {
-            "type" => "articles",
             "id" => "1",
             "attributes" => {
               "title" => "My Article"
-            }
+            },
+            "type" => "articles"
           },
           {
-            "type" => "articles",
             "id" => "2",
             "attributes" => {
               "title" => "My Other Article"
-            }
+            },
+            "type" => "articles"
           }
         ]
       }
@@ -164,7 +172,7 @@ class JSONAPIFieldsetsTest < Minitest::Spec
       CollectionResourceObjectDecorator.for_collection.new([
         Article.new(1, "My Article", "An interesting read."),
         Article.new(2, "My Other Article", "An interesting read.")
-      ]).to_json(include: [:title, :id]).must_equal document.to_json
+      ]).to_json(attributes: { include: [:title] }).must_equal document.to_json
     end
   end
 end

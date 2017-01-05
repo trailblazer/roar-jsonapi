@@ -18,11 +18,17 @@ module Roar
           extend JSONAPI::Declarative
           extend JSONAPI::ForCollection
           include JSONAPI::Document
+          self.representation_wrap = :data
+
+          property :id, render_filter: ->(input, _options) { input.to_s }
 
           nested :relationships do
           end
 
           nested :included do
+            def to_hash(*)
+              super.flat_map { |_, resource| resource }
+            end
           end
         end
       end
@@ -38,7 +44,7 @@ module Roar
       end
 
       module Fragment
-        Included = ->(document, included, options) do
+        Included = ->(included, options) do
           return unless included && included.any?
           return if options[:included] == false
 
@@ -48,17 +54,16 @@ module Roar
             type_and_id_seen.add? [object['type'], object['id']]
           }
 
-          document['included'] = included
-        end
-
-        Links = ->(document, links, _options) do
-          document['links'] = links if links.any?
-        end
-
-        Meta = ->(document, meta, _options) do
-          document['meta'] = meta if meta.any?
+          included
         end
       end
+    end
+
+    module HashUtils
+      def store_if_any(hash, key, value)
+        hash[key] = value if value && value.any?
+      end
+      module_function :store_if_any
     end
   end
 end

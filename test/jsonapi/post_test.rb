@@ -1,7 +1,6 @@
 require "test_helper"
 require "roar/json/json_api"
 require "json"
-require "jsonapi/representer"
 
 class JsonapiPostTest < MiniTest::Spec
   describe "Parse" do
