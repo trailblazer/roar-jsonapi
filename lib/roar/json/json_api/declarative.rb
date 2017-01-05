@@ -71,13 +71,23 @@ module Roar
           end
 
           nested(:relationships, inherit: true) do
-            nested(:"#{name}_relationship", as: name, skip_render: ->(_options) { !send(name) }) do
+            nested(:"#{name}_relationship", as: name) do
               include Roar::JSON
               include Roar::Hypermedia
               include JSONAPI::Meta
 
-              property name, options.merge(as:        :data,
-                                           decorator: resource_identifier_representer)
+              property name, options.merge(as:           :data,
+                                           getter:       ->(opts) {
+                                             object = opts[:binding].send(:exec_context, opts)
+                                             value  = object.public_send(opts[:binding].getter)
+                                             # do not blow up on nil collections
+                                             return [] if options[:collection] && value.nil?
+
+                                             value
+                                           },
+                                           render_nil:   true,
+                                           render_empty: true,
+                                           decorator:    resource_identifier_representer)
 
               instance_exec(&resource_identifier_representer.relationship_block)
 

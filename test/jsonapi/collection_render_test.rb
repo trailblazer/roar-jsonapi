@@ -54,6 +54,10 @@ class JsonapiCollectionRenderTest < MiniTest::Spec
                               'related' => '/articles/2/author'
                             }
                           },
+                          'editor'   => {
+                            'data' => nil,
+                            'meta' => { 'peer_reviewed' => false }
+                          },
                           'comments' => {
                             'data'  => [
                               { 'type' => 'comments', 'id' => 'comment:3' }
@@ -78,6 +82,10 @@ class JsonapiCollectionRenderTest < MiniTest::Spec
                               'self'    => '/articles/3/relationships/author',
                               'related' => '/articles/3/author'
                             }
+                          },
+                          'editor'   => {
+                            'data' => nil,
+                            'meta' => { 'peer_reviewed' => false }
                           },
                           'comments' => {
                             'data'  => [
@@ -182,6 +190,10 @@ class JsonapiCollectionRenderTest < MiniTest::Spec
                               'related' => '/articles/2/author'
                             }
                           },
+                          'editor'   => {
+                            'data' => nil,
+                            'meta' => { 'peer_reviewed' => false }
+                          },
                           'comments' => {
                             'data'  => [
                               { 'type' => 'comments', 'id' => 'comment:3' }
@@ -206,6 +218,10 @@ class JsonapiCollectionRenderTest < MiniTest::Spec
                               'self'    => '/articles/3/relationships/author',
                               'related' => '/articles/3/author'
                             }
+                          },
+                          'editor'   => {
+                            'data' => nil,
+                            'meta' => { 'peer_reviewed' => false }
                           },
                           'comments' => {
                             'data'  => [
