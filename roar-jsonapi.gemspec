@@ -1,9 +1,9 @@
 $LOAD_PATH.push File.expand_path('../lib', __FILE__)
-require 'roar/jsonapi/version'
+require 'roar/json/json_api/version'
 
 Gem::Specification.new do |s|
   s.name        = 'roar-jsonapi'
-  s.version     = Roar::JSONAPI::VERSION
+  s.version     = Roar::JSON::JSONAPI::VERSION
   s.platform    = Gem::Platform::RUBY
   s.authors     = ['Nick Sutterer']
   s.email       = ['apotonick@gmail.com']
