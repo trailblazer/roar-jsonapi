@@ -81,9 +81,11 @@ module Roar
                                              object = opts[:binding].send(:exec_context, opts)
                                              value  = object.public_send(opts[:binding].getter)
                                              # do not blow up on nil collections
-                                             return [] if options[:collection] && value.nil?
-
-                                             value
+                                             if options[:collection] && value.nil?
+                                               []
+                                             else
+                                               value
+                                             end
                                            },
                                            render_nil:   true,
                                            render_empty: true,
