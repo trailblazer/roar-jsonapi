@@ -9,241 +9,357 @@ class JsonapiCollectionRenderTest < MiniTest::Spec
   let (:decorator) { ArticleDecorator.for_collection.new([article, article2, article3]) }
 
   it "renders full document" do
-    hash = decorator.to_hash
-    hash.must_equal('data'     => [
-                      {
-                        'type'          => 'articles',
-                        'id'            => '1',
-                        'attributes'    => { 'title' => 'Health walk' },
-                        'relationships' => {
-                          'author'   => {
-                            'data'  => { 'type' => 'authors', 'id' => '2' },
-                            'links' => {
-                              'self'    => '/articles/1/relationships/author',
-                              'related' => '/articles/1/author'
-                            }
-                          },
-                          'editor'   => {
-                            'data' => { 'type' => 'editors', 'id' => 'editor:1' },
-                            'meta' => { 'peer_reviewed' => false }
-                          },
-                          'comments' => {
-                            'data'  => [
-                              { 'type' => 'comments', 'id' => 'comment:1' },
-                              { 'type' => 'comments', 'id' => 'comment:2' }
-                            ],
-                            'links' => {
-                              'self'    => '/articles/1/relationships/comments',
-                              'related' => '/articles/1/comments'
-                            },
-                            'meta' => { 'comment-count' => 5 }
-                          }
-                        },
-                        'links'         => { 'self' => 'http://Article/1' },
-                        'meta'          => { 'reviewers' => ['Christian Bernstein'], 'reviewer_initials' => 'C.B.' }
-                      },
-                      {
-                        'type'          => 'articles',
-                        'id'            => '2',
-                        'attributes'    => { 'title' => 'Virgin Ska' },
-                        'relationships' => {
-                          'author'   => {
-                            'data'  => { 'type' => 'authors', 'id' => 'author:1' },
-                            'links' => {
-                              'self'    => '/articles/2/relationships/author',
-                              'related' => '/articles/2/author'
-                            }
-                          },
-                          'editor'   => {
-                            'data' => nil,
-                            'meta' => { 'peer_reviewed' => false }
-                          },
-                          'comments' => {
-                            'data'  => [
-                              { 'type' => 'comments', 'id' => 'comment:3' }
-                            ],
-                            'links' => {
-                              'self'    => '/articles/2/relationships/comments',
-                              'related' => '/articles/2/comments'
-                            },
-                            'meta' => { 'comment-count' => 5 }
-                          }
-                        },
-                        'links'         => { 'self' => 'http://Article/2' },
-                        'meta'          => { 'reviewers' => ['Christian Bernstein'], 'reviewer_initials' => 'C.B.' }
-                      },
-                      {
-                        'type'          => 'articles',
-                        'id'            => '3',
-                        'attributes'    => { 'title' => 'Gramo echo' },
-                        'relationships' => {
-                          'author'   => {
-                            'data'  => { 'type' => 'authors', 'id' => 'author:1' },
-                            'links' => {
-                              'self'    => '/articles/3/relationships/author',
-                              'related' => '/articles/3/author'
-                            }
-                          },
-                          'editor'   => {
-                            'data' => nil,
-                            'meta' => { 'peer_reviewed' => false }
-                          },
-                          'comments' => {
-                            'data'  => [
-                              { 'type' => 'comments', 'id' => 'comment:4' }
-                            ],
-                            'links' => {
-                              'self'    => '/articles/3/relationships/comments',
-                              'related' => '/articles/3/comments'
-                            },
-                            'meta' => { 'comment-count' => 5 }
-                          }
-                        },
-                        'links'         => { 'self' => 'http://Article/3' },
-                        'meta'          => { 'reviewers' => ['Christian Bernstein'], 'reviewer_initials' => 'C.B.' }
-                      }
-                    ],
-                    'links'    => { 'self' => '//articles' },
-                    'meta'     => { 'count' => 3 },
-                    'included' => [
-                      {
-                        'type'  => 'authors',
-                        'id'    => '2',
-                        'links' => { 'self' => 'http://authors/2' }
-                      },
-                      {
-                        'type' => 'editors',
-                        'id'   => 'editor:1'
-                      },
-                      {
-                        'type'       => 'comments',
-                        'id'         => 'comment:1',
-                        'attributes' => { 'body' => 'Ice and Snow' },
-                        'links'      => { 'self' => 'http://comments/comment:1' }
-                      },
-                      {
-                        'type'       => 'comments',
-                        'id'         => 'comment:2',
-                        'attributes' => { 'body' => 'Red Stripe Skank' },
-                        'links'      => { 'self' => 'http://comments/comment:2' }
-                      },
-                      {
-                        'type'  => 'authors',
-                        'id'    => 'author:1',
-                        'links' => { 'self' => 'http://authors/author:1' }
-                      },
-                      {
-                        'type'       => 'comments',
-                        'id'         => 'comment:3',
-                        'attributes' => { 'body' => 'Cool song!' },
-                        'links'      => { 'self' => 'http://comments/comment:3' }
-                      },
-                      {
-                        'type'       => 'comments',
-                        'id'         => 'comment:4',
-                        'attributes' => { 'body' => 'Skalar' },
-                        'links'      => { 'self' => 'http://comments/comment:4' }
-                      }
-                    ])
+    json = decorator.to_json
+    json.must_equal_json(%({
+      "data": [{
+        "type": "articles",
+        "id": "1",
+        "attributes": {
+          "title": "Health walk"
+        },
+        "relationships": {
+          "author": {
+            "data": {
+              "type": "authors",
+              "id": "2"
+            },
+            "links": {
+              "self": "/articles/1/relationships/author",
+              "related": "/articles/1/author"
+            }
+          },
+          "editor": {
+            "data": {
+              "type": "editors",
+              "id": "editor:1"
+            },
+            "meta": {
+              "peer_reviewed": false
+            }
+          },
+          "comments": {
+            "data": [{
+              "type": "comments",
+              "id": "comment:1"
+            }, {
+              "type": "comments",
+              "id": "comment:2"
+            }],
+            "links": {
+              "self": "/articles/1/relationships/comments",
+              "related": "/articles/1/comments"
+            },
+            "meta": {
+              "comment-count": 5
+            }
+          }
+        },
+        "links": {
+          "self": "http://Article/1"
+        },
+        "meta": {
+          "reviewers": ["Christian Bernstein"],
+          "reviewer_initials": "C.B."
+        }
+      }, {
+        "type": "articles",
+        "id": "2",
+        "attributes": {
+          "title": "Virgin Ska"
+        },
+        "relationships": {
+          "author": {
+            "data": {
+              "type": "authors",
+              "id": "author:1"
+            },
+            "links": {
+              "self": "/articles/2/relationships/author",
+              "related": "/articles/2/author"
+            }
+          },
+          "editor": {
+            "data": null,
+            "meta": {
+              "peer_reviewed": false
+            }
+          },
+          "comments": {
+            "data": [{
+              "type": "comments",
+              "id": "comment:3"
+            }],
+            "links": {
+              "self": "/articles/2/relationships/comments",
+              "related": "/articles/2/comments"
+            },
+            "meta": {
+              "comment-count": 5
+            }
+          }
+        },
+        "links": {
+          "self": "http://Article/2"
+        },
+        "meta": {
+          "reviewers": ["Christian Bernstein"],
+          "reviewer_initials": "C.B."
+        }
+      }, {
+        "type": "articles",
+        "id": "3",
+        "attributes": {
+          "title": "Gramo echo"
+        },
+        "relationships": {
+          "author": {
+            "data": {
+              "type": "authors",
+              "id": "author:1"
+            },
+            "links": {
+              "self": "/articles/3/relationships/author",
+              "related": "/articles/3/author"
+            }
+          },
+          "editor": {
+            "data": null,
+            "meta": {
+              "peer_reviewed": false
+            }
+          },
+          "comments": {
+            "data": [{
+              "type": "comments",
+              "id": "comment:4"
+            }],
+            "links": {
+              "self": "/articles/3/relationships/comments",
+              "related": "/articles/3/comments"
+            },
+            "meta": {
+              "comment-count": 5
+            }
+          }
+        },
+        "links": {
+          "self": "http://Article/3"
+        },
+        "meta": {
+          "reviewers": ["Christian Bernstein"],
+          "reviewer_initials": "C.B."
+        }
+      }],
+      "links": {
+        "self": "//articles"
+      },
+      "meta": {
+        "count": 3
+      },
+      "included": [{
+        "type": "authors",
+        "id": "2",
+        "links": {
+          "self": "http://authors/2"
+        }
+      }, {
+        "type": "editors",
+        "id": "editor:1"
+      }, {
+        "type": "comments",
+        "id": "comment:1",
+        "attributes": {
+          "body": "Ice and Snow"
+        },
+        "links": {
+          "self": "http://comments/comment:1"
+        }
+      }, {
+        "type": "comments",
+        "id": "comment:2",
+        "attributes": {
+          "body": "Red Stripe Skank"
+        },
+        "links": {
+          "self": "http://comments/comment:2"
+        }
+      }, {
+        "type": "authors",
+        "id": "author:1",
+        "links": {
+          "self": "http://authors/author:1"
+        }
+      }, {
+        "type": "comments",
+        "id": "comment:3",
+        "attributes": {
+          "body": "Cool song!"
+        },
+        "links": {
+          "self": "http://comments/comment:3"
+        }
+      }, {
+        "type": "comments",
+        "id": "comment:4",
+        "attributes": {
+          "body": "Skalar"
+        },
+        "links": {
+          "self": "http://comments/comment:4"
+        }
+      }]
+    }))
   end
 
   it "included: false suppresses compound docs" do
-    hash = decorator.to_hash(included: false)
-    hash.must_equal('data'  => [
-                      {
-                        'type'          => 'articles',
-                        'id'            => '1',
-                        'attributes'    => { 'title' => 'Health walk' },
-                        'relationships' => {
-                          'author'   => {
-                            'data'  => { 'type' => 'authors', 'id' => '2' },
-                            'links' => {
-                              'self'    => '/articles/1/relationships/author',
-                              'related' => '/articles/1/author'
-                            }
-                          },
-                          'editor'   => {
-                            'data' => { 'type' => 'editors', 'id' => 'editor:1' },
-                            'meta' => { 'peer_reviewed' => false }
-                          },
-                          'comments' => {
-                            'data'  => [
-                              { 'type' => 'comments', 'id' => 'comment:1' },
-                              { 'type' => 'comments', 'id' => 'comment:2' }
-                            ],
-                            'links' => {
-                              'self'    => '/articles/1/relationships/comments',
-                              'related' => '/articles/1/comments'
-                            },
-                            'meta' => { 'comment-count' => 5 }
-                          }
-                        },
-                        'links'         => { 'self' => 'http://Article/1' },
-                        'meta'          => { 'reviewers' => ['Christian Bernstein'], 'reviewer_initials' => 'C.B.' }
-                      },
-                      {
-                        'type'          => 'articles',
-                        'id'            => '2',
-                        'attributes'    => { 'title' => 'Virgin Ska' },
-                        'relationships' => {
-                          'author'   => {
-                            'data'  => { 'type' => 'authors', 'id' => 'author:1' },
-                            'links' => {
-                              'self'    => '/articles/2/relationships/author',
-                              'related' => '/articles/2/author'
-                            }
-                          },
-                          'editor'   => {
-                            'data' => nil,
-                            'meta' => { 'peer_reviewed' => false }
-                          },
-                          'comments' => {
-                            'data'  => [
-                              { 'type' => 'comments', 'id' => 'comment:3' }
-                            ],
-                            'links' => {
-                              'self'    => '/articles/2/relationships/comments',
-                              'related' => '/articles/2/comments'
-                            },
-                            'meta' => { 'comment-count' => 5 }
-                          }
-                        },
-                        'links'         => { 'self' => 'http://Article/2' },
-                        'meta'          => { 'reviewers' => ['Christian Bernstein'], 'reviewer_initials' => 'C.B.' }
-                      },
-                      {
-                        'type'          => 'articles',
-                        'id'            => '3',
-                        'attributes'    => { 'title' => 'Gramo echo' },
-                        'relationships' => {
-                          'author'   => {
-                            'data'  => { 'type' => 'authors', 'id' => 'author:1' },
-                            'links' => {
-                              'self'    => '/articles/3/relationships/author',
-                              'related' => '/articles/3/author'
-                            }
-                          },
-                          'editor'   => {
-                            'data' => nil,
-                            'meta' => { 'peer_reviewed' => false }
-                          },
-                          'comments' => {
-                            'data'  => [
-                              { 'type' => 'comments', 'id' => 'comment:4' }
-                            ],
-                            'links' => {
-                              'self'    => '/articles/3/relationships/comments',
-                              'related' => '/articles/3/comments'
-                            },
-                            'meta' => { 'comment-count' => 5 }
-                          }
-                        },
-                        'links'         => { 'self' => 'http://Article/3' },
-                        'meta'          => { 'reviewers' => ['Christian Bernstein'], 'reviewer_initials' => 'C.B.' }
-                      }
-                    ],
-                    'links' => { 'self' => '//articles' },
-                    'meta'  => { 'count' => 3 })
+    json = decorator.to_json(included: false)
+    json.must_equal_json(%({
+      "data": [{
+        "type": "articles",
+        "id": "1",
+        "attributes": {
+          "title": "Health walk"
+        },
+        "relationships": {
+          "author": {
+            "data": {
+              "type": "authors",
+              "id": "2"
+            },
+            "links": {
+              "self": "/articles/1/relationships/author",
+              "related": "/articles/1/author"
+            }
+          },
+          "editor": {
+            "data": {
+              "type": "editors",
+              "id": "editor:1"
+            },
+            "meta": {
+              "peer_reviewed": false
+            }
+          },
+          "comments": {
+            "data": [{
+              "type": "comments",
+              "id": "comment:1"
+            }, {
+              "type": "comments",
+              "id": "comment:2"
+            }],
+            "links": {
+              "self": "/articles/1/relationships/comments",
+              "related": "/articles/1/comments"
+            },
+            "meta": {
+              "comment-count": 5
+            }
+          }
+        },
+        "links": {
+          "self": "http://Article/1"
+        },
+        "meta": {
+          "reviewers": ["Christian Bernstein"],
+          "reviewer_initials": "C.B."
+        }
+      }, {
+        "type": "articles",
+        "id": "2",
+        "attributes": {
+          "title": "Virgin Ska"
+        },
+        "relationships": {
+          "author": {
+            "data": {
+              "type": "authors",
+              "id": "author:1"
+            },
+            "links": {
+              "self": "/articles/2/relationships/author",
+              "related": "/articles/2/author"
+            }
+          },
+          "editor": {
+            "data": null,
+            "meta": {
+              "peer_reviewed": false
+            }
+          },
+          "comments": {
+            "data": [{
+              "type": "comments",
+              "id": "comment:3"
+            }],
+            "links": {
+              "self": "/articles/2/relationships/comments",
+              "related": "/articles/2/comments"
+            },
+            "meta": {
+              "comment-count": 5
+            }
+          }
+        },
+        "links": {
+          "self": "http://Article/2"
+        },
+        "meta": {
+          "reviewers": ["Christian Bernstein"],
+          "reviewer_initials": "C.B."
+        }
+      }, {
+        "type": "articles",
+        "id": "3",
+        "attributes": {
+          "title": "Gramo echo"
+        },
+        "relationships": {
+          "author": {
+            "data": {
+              "type": "authors",
+              "id": "author:1"
+            },
+            "links": {
+              "self": "/articles/3/relationships/author",
+              "related": "/articles/3/author"
+            }
+          },
+          "editor": {
+            "data": null,
+            "meta": {
+              "peer_reviewed": false
+            }
+          },
+          "comments": {
+            "data": [{
+              "type": "comments",
+              "id": "comment:4"
+            }],
+            "links": {
+              "self": "/articles/3/relationships/comments",
+              "related": "/articles/3/comments"
+            },
+            "meta": {
+              "comment-count": 5
+            }
+          }
+        },
+        "links": {
+          "self": "http://Article/3"
+        },
+        "meta": {
+          "reviewers": ["Christian Bernstein"],
+          "reviewer_initials": "C.B."
+        }
+      }],
+      "links": {
+        "self": "//articles"
+      },
+      "meta": {
+        "count": 3
+      }
+    }))
   end
 
   it "passes :user_options to toplevel links when rendering" do
@@ -266,20 +382,20 @@ class JsonapiCollectionRenderTest < MiniTest::Spec
 
   describe "Fetching Resources (empty collection)" do
     let(:document) {
-      {
-        "data" => [],
-        "links" => {
-          "self" => "//articles"
+      %({
+        "data": [],
+        "links": {
+          "self": "//articles"
         },
-        "meta" => {
-          "count" => 0
+        "meta": {
+          "count": 0
         }
-      }
+      })
     }
 
     let(:articles) { [] }
     subject { ArticleDecorator.for_collection.new(articles).to_json }
 
-    it { subject.must_equal document.to_json }
+    it { subject.must_equal_json document }
   end
 end

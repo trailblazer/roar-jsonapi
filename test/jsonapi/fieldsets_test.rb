@@ -45,56 +45,82 @@ class JSONAPIFieldsetsTest < Minitest::Spec
         to_json(attributes: { include: [:title] },
           included: { include: []},
           relationships: { include: []}).
-        must_equal( {
-          "data" => {
-            "id" => "1",
-            "attributes" => {
-              "title" => "My Article"
-            },
-            "type" => "articles"
+        must_equal_json(%(
+          {
+            "data": {
+              "id": "1",
+              "attributes": {
+                "title": "My Article"
+              },
+              "type": "articles"
+            }
           }
-        }.to_json )
+        ))
     end
 
     it "includes compound objects" do
       DocumentSingleResourceObjectDecorator.new(article).
-        to_hash(
+        to_json(
           attributes: { include:  [:id, :title] },
           included: {include: [:comments]},
           relationships: { include: []}).
-        must_equal Hash[{
-          'data'=>
-            {'type'=>"articles",
-             'id'=>"1",
-             'attributes'=>{"title"=>"My Article"},
+        must_equal_json(%(
+          {
+            "data": {
+              "id": "1",
+              "attributes": {
+                "title": "My Article"
+              },
+              "type": "articles"
             },
-           'included'=>
-            [{'type'=>"comments",
-              'id'=>"c:1",
-              'attributes'=>{"body"=>"Cool!", "good"=>true}},
-             {'type'=>"comments",
-              'id'=>"c:2",
-              'attributes'=>{"body"=>"Nah", "good"=>false}}
+            "included": [
+              {
+                "type": "comments",
+                "id": "c:1",
+                "attributes": {
+                  "body": "Cool!",
+                  "good": true
+                }
+              },
+              {
+                "type": "comments",
+                "id": "c:2",
+                "attributes": {
+                  "body": "Nah",
+                  "good": false
+                }
+              }
             ]
-        }]
-        # must_equal document.to_json
+          }
+        ))
     end
 
     it "includes other compound objects" do
       DocumentSingleResourceObjectDecorator.new(article).
-        to_hash(attributes: { include: [:title] },
+        to_json(attributes: { include: [:title] },
           included: {include: [:author]},
           relationships: { include: []}).
-        must_equal Hash[{
-          'data'=>
-            {'type'=>"articles",
-             'id'=>"1",
-             'attributes'=>{"title"=>"My Article"},
+        must_equal_json(%(
+          {
+            "data": {
+              "id": "1",
+              "attributes": {
+                "title": "My Article"
+              },
+              "type": "articles"
             },
-           'included'=>
-            [{'type'=>"author", 'id'=>"a:1", 'attributes'=>{"name"=>"Celso", "email"=>"celsito@trb.to"}}]
-        }]
-        # must_equal document.to_json
+            "included": [
+              {
+                "type": "author",
+                "id": "a:1",
+                "attributes": {
+                  "email": "celsito@trb.to",
+                  "name": "Celso"
+                }
+              }
+            ]
+          }
+        ))
     end
 
     describe "collection" do
@@ -148,31 +174,31 @@ class JSONAPIFieldsetsTest < Minitest::Spec
     end
 
     let(:document) {
-      {
-        "data" => [
+      %({
+        "data": [
           {
-            "id" => "1",
-            "attributes" => {
-              "title" => "My Article"
+            "id": "1",
+            "attributes": {
+              "title": "My Article"
             },
-            "type" => "articles"
+            "type": "articles"
           },
           {
-            "id" => "2",
-            "attributes" => {
-              "title" => "My Other Article"
+            "id": "2",
+            "attributes": {
+              "title": "My Other Article"
             },
-            "type" => "articles"
+            "type": "articles"
           }
         ]
-      }
+      })
     }
 
     it do
       CollectionResourceObjectDecorator.for_collection.new([
         Article.new(1, "My Article", "An interesting read."),
         Article.new(2, "My Other Article", "An interesting read.")
-      ]).to_json(attributes: { include: [:title] }).must_equal document.to_json
+      ]).to_json(attributes: { include: [:title] }).must_equal_json document
     end
   end
 end

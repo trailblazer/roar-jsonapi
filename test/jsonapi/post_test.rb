@@ -5,30 +5,35 @@ require "json"
 class JsonapiPostTest < MiniTest::Spec
   describe "Parse" do
     let(:post_article) {
-      {
-        "data" => {
-          "type" => "articles",
-          "attributes" => {
-            "title" => "Ember Hamster",
+      %({
+        "data": {
+          "type": "articles",
+          "attributes": {
+            "title": "Ember Hamster"
           },
-          # that does do `photo.photographer= Photographer.find(9)`
-          "relationships" => {
-            "author" => {
-              "data" => { "type" => "people", "id" => "9", "name" => "Celsito" } # FIXME: what should happen if i add `"name" => "Celsito"` here? should that be read or not?
+          "relationships": {
+            "author": {
+              "data": {
+                "type": "people",
+                "id": "9",
+                "name": "Celsito"
+              }
             },
-            "comments" => {
-              "data" => [
-                { "type" => "comment", "id" => "2" },
-                { "type" => "comment", "id" => "3" },
-              ]
+            "comments": {
+              "data": [{
+                "type": "comment",
+                "id": "2"
+              }, {
+                "type": "comment",
+                "id": "3"
+              }]
             }
-
           }
         }
-      }
+      })
     }
 
-    subject { ArticleDecorator.new(Article.new(nil, nil, nil, nil, [])).from_json(post_article.to_json) }
+    subject { ArticleDecorator.new(Article.new(nil, nil, nil, nil, [])).from_json(post_article) }
 
     it do
       subject.title.must_equal "Ember Hamster"
@@ -42,17 +47,17 @@ class JsonapiPostTest < MiniTest::Spec
 
   describe "Parse Simple" do
     let(:post_article) {
-      {
-        "data" => {
-          "type" => "articles",
-          "attributes" => {
-            "title" => "Ember Hamster",
+      %({
+        "data": {
+          "type": "articles",
+          "attributes": {
+            "title": "Ember Hamster"
           }
         }
-      }
+      })
     }
 
-    subject { ArticleDecorator.new(Article.new(nil, nil, nil, nil, [])).from_json(post_article.to_json) }
+    subject { ArticleDecorator.new(Article.new(nil, nil, nil, nil, [])).from_json(post_article) }
 
     it do
       subject.title.must_equal "Ember Hamster"
@@ -61,10 +66,10 @@ class JsonapiPostTest < MiniTest::Spec
 
   describe "Parse Badly Formed Document" do
     let(:post_article) {
-      { "title" => "Ember Hamster" }
+      %({"title":"Ember Hamster"})
     }
 
-    subject { ArticleDecorator.new(Article.new(nil, nil, nil, nil, [])).from_json(post_article.to_json) }
+    subject { ArticleDecorator.new(Article.new(nil, nil, nil, nil, [])).from_json(post_article) }
 
     it do
       subject.title.must_be_nil

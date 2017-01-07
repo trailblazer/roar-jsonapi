@@ -7,99 +7,145 @@ class JsonapiRenderTest < MiniTest::Spec
   let (:decorator) { ArticleDecorator.new(article) }
 
   it "renders full document" do
-    hash = decorator.to_hash
-    hash.must_equal(
-      'data'     => {
-        'type'          => 'articles',
-        'id'            => '1',
-        'attributes'    => { 'title' => 'Health walk' },
-        'relationships' => {
-          'author'   => {
-            'data'  => { 'type' => 'authors', 'id' => '2' },
-            'links' => {
-              'self'    => '/articles/1/relationships/author',
-              'related' => '/articles/1/author'
+    json = decorator.to_json
+    json.must_equal_json(%({
+      "data": {
+        "id": "1",
+        "relationships": {
+          "author": {
+            "data": {
+              "id": "2",
+              "type": "authors"
+            },
+            "links": {
+              "self": "/articles/1/relationships/author",
+              "related": "/articles/1/author"
             }
           },
-          'editor'   => {
-            'data' => { 'type' => 'editors', 'id' => 'editor:1' },
-            'meta' => { 'peer_reviewed' => false }
-          },
-          'comments' => {
-            'data'  => [
-              { 'type' => 'comments', 'id' => 'comment:1' },
-              { 'type' => 'comments', 'id' => 'comment:2' }
-            ],
-            'links' => {
-              'self'    => '/articles/1/relationships/comments',
-              'related' => '/articles/1/comments'
+          "editor": {
+            "data": {
+              "id": "editor:1",
+              "type": "editors"
             },
-            'meta'  => { 'comment-count' => 5 }
+            "meta": {
+              "peer_reviewed": false
+            }
+          },
+          "comments": {
+            "data": [{
+              "id": "comment:1",
+              "type": "comments"
+            }, {
+              "id": "comment:2",
+              "type": "comments"
+            }],
+            "links": {
+              "self": "/articles/1/relationships/comments",
+              "related": "/articles/1/comments"
+            },
+            "meta": {
+              "comment-count": 5
+            }
           }
         },
-        'links'         => { 'self' => 'http://Article/1' }
-      },
-      'included' => [
-        {
-          'type'  => 'authors',
-          'id'    => '2',
-          'links' => { 'self' => 'http://authors/2' }
+        "attributes": {
+          "title": "Health walk"
         },
-        {
-          'type' => 'editors',
-          'id'   => 'editor:1'
-        },
-        {
-          'type'       => 'comments',
-          'id'         => 'comment:1',
-          'attributes' => { 'body' => 'Ice and Snow' },
-          'links'      => { 'self' => 'http://comments/comment:1' }
-        },
-        {
-          'type'       => 'comments',
-          'id'         => 'comment:2',
-          'attributes' => { 'body' => 'Red Stripe Skank' },
-          'links'      => { 'self' => 'http://comments/comment:2' }
+        "type": "articles",
+        "links": {
+          "self": "http://Article/1"
         }
-      ],
-      'meta'     => { 'reviewers' => ['Christian Bernstein'], 'reviewer_initials' => 'C.B.' }
-    )
+      },
+      "included": [{
+        "id": "2",
+        "type": "authors",
+        "links": {
+          "self": "http://authors/2"
+        }
+      }, {
+        "id": "editor:1",
+        "type": "editors"
+      }, {
+        "id": "comment:1",
+        "attributes": {
+          "body": "Ice and Snow"
+        },
+        "type": "comments",
+        "links": {
+          "self": "http://comments/comment:1"
+        }
+      }, {
+        "id": "comment:2",
+        "attributes": {
+          "body": "Red Stripe Skank"
+        },
+        "type": "comments",
+        "links": {
+          "self": "http://comments/comment:2"
+        }
+      }],
+      "meta": {
+        "reviewers": ["Christian Bernstein"],
+        "reviewer_initials": "C.B."
+      }
+    }))
   end
 
   it "included: false suppresses compound docs" do
-    decorator.to_hash(included: false).must_equal(
-      'data' => {
-        'type'          => 'articles',
-        'id'            => '1',
-        'attributes'    => { 'title' => 'Health walk' },
-        'relationships' => {
-          'author'   => {
-            'data'  => { 'type' => 'authors', 'id' => '2' },
-            'links' => {
-              'self'    => '/articles/1/relationships/author',
-              'related' => '/articles/1/author'
+    json = decorator.to_json(included: false)
+    json.must_equal_json(%({
+      "data": {
+        "id": "1",
+        "relationships": {
+          "author": {
+            "data": {
+              "id": "2",
+              "type": "authors"
+            },
+            "links": {
+              "self": "/articles/1/relationships/author",
+              "related": "/articles/1/author"
             }
           },
-          'editor'   => {
-            'data' => { 'type' => 'editors', 'id' => 'editor:1' },
-            'meta' => { 'peer_reviewed' => false }
-          },
-          'comments' => {
-            'data'  => [
-              { 'type' => 'comments', 'id' => 'comment:1' },
-              { 'type' => 'comments', 'id' => 'comment:2' }
-            ],
-            'links' => {
-              'self'    => '/articles/1/relationships/comments',
-              'related' => '/articles/1/comments'
+          "editor": {
+            "data": {
+              "id": "editor:1",
+              "type": "editors"
             },
-            'meta'  => { 'comment-count' => 5 }
+            "meta": {
+              "peer_reviewed": false
+            }
+          },
+          "comments": {
+            "data": [{
+              "id": "comment:1",
+              "type": "comments"
+            }, {
+              "id": "comment:2",
+              "type": "comments"
+            }],
+            "links": {
+              "self": "/articles/1/relationships/comments",
+              "related": "/articles/1/comments"
+            },
+            "meta": {
+              "comment-count": 5
+            }
           }
         },
-        'links'         => { 'self' => 'http://Article/1' }
+        "attributes": {
+          "title": "Health walk"
+        },
+        "type": "articles",
+        "links": {
+          "self": "http://Article/1"
+        }
       },
-      'meta' => { 'reviewers' => ['Christian Bernstein'], 'reviewer_initials' => 'C.B.' }
-    )
+      "meta": {
+        "reviewers": ["Christian Bernstein"],
+        "reviewer_initials": "C.B."
+      }
+    }))
   end
 
   it 'renders additional meta information if meta option supplied' do
@@ -129,20 +175,32 @@ class JsonapiRenderTest < MiniTest::Spec
     end
 
     let(:document) {
-      {
-        "data" => {
-          "id" => "1",
-          "attributes" => {
-            "title" => "My Article"
+      %({
+        "data": {
+          "id": "1",
+          "attributes": {
+            "title": "My Article"
           },
-          "type" => "articles"
+          "type": "articles"
         }
-      }
+      })
     }
 
-    let (:collection_document) { {'data'=>[{'type'=>"articles", 'id'=>"1", 'attributes'=>{"title"=>"My Article"}}]} }
+    let(:collection_document) {
+      %({
+        "data": [
+          {
+            "type": "articles",
+            "id": "1",
+            "attributes": {
+              "title": "My Article"
+            }
+          }
+        ]
+      })
+    }
 
-    it { DocumentSingleResourceObjectDecorator.new(Article.new(1, 'My Article')).to_json.must_equal document.to_json }
-    it { DocumentSingleResourceObjectDecorator.for_collection.new([Article.new(1, 'My Article')]).to_hash.must_equal collection_document }
+    it { DocumentSingleResourceObjectDecorator.new(Article.new(1, 'My Article')).to_json.must_equal_json document }
+    it { DocumentSingleResourceObjectDecorator.for_collection.new([Article.new(1, 'My Article')]).to_json.must_equal_json collection_document }
   end
 end
