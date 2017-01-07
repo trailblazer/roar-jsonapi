@@ -22,6 +22,7 @@ module Roar
       end
 
       module Document
+        # rubocop:disable Metrics/MethodLength
         def to_hash(options = {})
           document  = super(Options::Include.(options, self))
           unwrapped = options[:wrap] == false
@@ -45,6 +46,7 @@ module Roar
 
           document
         end
+        # rubocop:enable Metrics/MethodLength
       end
     end
   end

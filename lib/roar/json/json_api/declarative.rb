@@ -85,6 +85,7 @@ module Roar
 
               instance_exec(&resource_identifier_representer.relationship)
 
+              # rubocop:disable Lint/NestedMethodDefinition
               def to_hash(*)
                 hash  = super
                 links = Renderer::Links.new.(hash, {})
@@ -95,6 +96,7 @@ module Roar
 
                 hash
               end
+              # rubocop:enable Lint/NestedMethodDefinition
             end
           end
         end

@@ -8,6 +8,8 @@ module Roar
           nested_builder.(_base: default_nested_class, _features: [Roar::JSON, Roar::Hypermedia, JSONAPI::Meta], _block: proc do
             collection :to_a, as: :data, decorator: singular, wrap: false
 
+            # rubocop:disable Metrics/MethodLength
+            # rubocop:disable Lint/NestedMethodDefinition
             def to_hash(options = {})
               document = super(to_a: options, user_options: options[:user_options]) # [{data: {..}, data: {..}}]
 
@@ -25,6 +27,8 @@ module Roar
 
               document
             end
+            # rubocop:enable Lint/NestedMethodDefinition
+            # rubocop:enable Metrics/MethodLength
           end)
         end
       end
