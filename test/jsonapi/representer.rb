@@ -21,11 +21,6 @@ class AuthorDecorator < Roar::Decorator
   include Roar::JSON::JSONAPI
   type :authors
 
-  relationship do
-    link(:self)     { "/articles/#{represented.id}/relationships/author" }
-    link(:related)  { "/articles/#{represented.id}/author" }
-  end
-
   attributes do
     property :email
   end
@@ -36,15 +31,6 @@ end
 class CommentDecorator < Roar::Decorator
   include Roar::JSON::JSONAPI
   type :comments
-
-  relationship do
-    link(:self)     { "/articles/#{represented.id}/relationships/comments" }
-    link(:related)  { "/articles/#{represented.id}/comments" }
-
-    meta do
-      property :count, as: 'comment-count'
-    end
-  end
 
   attributes do
     property :body
@@ -91,7 +77,13 @@ class ArticleDecorator < Roar::Decorator
 
   # relationships
   has_one :author, class: Author, decorator: AuthorDecorator,
-    populator: ::Representable::FindOrInstantiate # populator is for parsing, only.
+    populator: ::Representable::FindOrInstantiate do # populator is for parsing, only.
+
+    relationship do
+      link(:self)     { "/articles/#{represented.id}/relationships/author" }
+      link(:related)  { "/articles/#{represented.id}/author" }
+    end
+  end
 
   has_one :editor do
     type :editors
@@ -109,5 +101,15 @@ class ArticleDecorator < Roar::Decorator
   end
 
   has_many :comments, class: Comment, decorator: CommentDecorator,
-    populator: ::Representable::FindOrInstantiate
+    populator: ::Representable::FindOrInstantiate do
+
+    relationship do
+      link(:self)     { "/articles/#{represented.id}/relationships/comments" }
+      link(:related)  { "/articles/#{represented.id}/comments" }
+
+      meta do
+        property :count, as: 'comment-count'
+      end
+    end
+  end
 end

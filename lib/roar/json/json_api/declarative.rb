@@ -42,12 +42,11 @@ module Roar
         private
 
         def has_relationship(name, options = {}, &block)
-          resource_decorator = options.fetch(:decorator) {
-            blank_decorator = Class.new(Roar::Decorator)
-            blank_decorator.send(:include, Roar::JSON::JSONAPI)
-            blank_decorator.instance_exec(&block)
-            blank_decorator
-          }
+          resource_decorator = options[:decorator] || options[:extends] ||
+                               Class.new(Roar::Decorator).tap { |decorator|
+                                 decorator.send(:include, Roar::JSON::JSONAPI)
+                               }
+          resource_decorator.instance_exec(&block)
 
           resource_identifier_representer = Class.new(resource_decorator)
           resource_identifier_representer.class_eval do
