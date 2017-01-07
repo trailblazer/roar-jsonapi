@@ -11,6 +11,11 @@ Style/AndOr:
 Style/BlockDelimiters:
   Enabled: true
   EnforcedStyle: semantic
+  IgnoredMethods:
+    - lambda
+    - proc
+    - it
+    - link
 
 Style/Lambda:
   Enabled: false
