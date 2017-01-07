@@ -12,9 +12,9 @@ module Roar
     module JSONAPI
       def self.included(base)
         base.class_eval do
-          include Roar::JSON
-          include Roar::Hypermedia
-          include JSONAPI::Meta
+          feature Roar::JSON
+          feature Roar::Hypermedia
+          feature JSONAPI::Meta
           extend JSONAPI::Declarative
           extend JSONAPI::ForCollection
           include JSONAPI::Document
