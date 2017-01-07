@@ -1,12 +1,12 @@
-require "test_helper"
-require "roar/json/json_api"
-require "json"
+require 'test_helper'
+require 'roar/json/json_api'
+require 'json'
 
 class JsonapiRenderTest < MiniTest::Spec
-  let (:article) { Article.new(1, "Health walk", Author.new(2), Author.new("editor:1"), [Comment.new("comment:1", "Ice and Snow"),Comment.new("comment:2", "Red Stripe Skank")]) }
-  let (:decorator) { ArticleDecorator.new(article) }
+  let(:article) { Article.new(1, 'Health walk', Author.new(2), Author.new('editor:1'), [Comment.new('comment:1', 'Ice and Snow'), Comment.new('comment:2', 'Red Stripe Skank')]) }
+  let(:decorator) { ArticleDecorator.new(article) }
 
-  it "renders full document" do
+  it 'renders full document' do
     json = decorator.to_json
     json.must_equal_json(%({
       "data": {
@@ -91,7 +91,7 @@ class JsonapiRenderTest < MiniTest::Spec
     }))
   end
 
-  it "included: false suppresses compound docs" do
+  it 'included: false suppresses compound docs' do
     json = decorator.to_json(included: false)
     json.must_equal_json(%({
       "data": {
@@ -150,8 +150,8 @@ class JsonapiRenderTest < MiniTest::Spec
 
   it 'renders additional meta information if meta option supplied' do
     hash = decorator.to_hash('meta' => {
-      'copyright' => 'Nick Sutterer', 'reviewers' => []
-    })
+                               'copyright' => 'Nick Sutterer', 'reviewers' => []
+                             })
     hash['meta']['copyright'].must_equal('Nick Sutterer')
     hash['meta']['reviewers'].must_equal([])
     hash['meta']['reviewer_initials'].must_equal('C.B.')
@@ -164,7 +164,7 @@ class JsonapiRenderTest < MiniTest::Spec
     hash['meta']['reviewer_initials'].must_equal('C.B.')
   end
 
-  describe "Single Resource Object" do
+  describe 'Single Resource Object' do
     class DocumentSingleResourceObjectDecorator < Roar::Decorator
       include Roar::JSON::JSONAPI
       type :articles

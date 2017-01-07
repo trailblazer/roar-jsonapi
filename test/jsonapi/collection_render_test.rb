@@ -1,14 +1,14 @@
-require "test_helper"
-require "roar/json/json_api"
-require "json"
+require 'test_helper'
+require 'roar/json/json_api'
+require 'json'
 
 class JsonapiCollectionRenderTest < MiniTest::Spec
-  let (:article) { Article.new(1, "Health walk", Author.new(2), Author.new("editor:1"), [Comment.new("comment:1", "Ice and Snow"),Comment.new("comment:2", "Red Stripe Skank")])}
-  let (:article2) { Article.new(2, "Virgin Ska", Author.new("author:1"), nil, [Comment.new("comment:3", "Cool song!")]) }
-  let (:article3) { Article.new(3, "Gramo echo", Author.new("author:1"), nil, [Comment.new("comment:4", "Skalar")]) }
-  let (:decorator) { ArticleDecorator.for_collection.new([article, article2, article3]) }
+  let(:article) { Article.new(1, 'Health walk', Author.new(2), Author.new('editor:1'), [Comment.new('comment:1', 'Ice and Snow'), Comment.new('comment:2', 'Red Stripe Skank')]) }
+  let(:article2) { Article.new(2, 'Virgin Ska', Author.new('author:1'), nil, [Comment.new('comment:3', 'Cool song!')]) }
+  let(:article3) { Article.new(3, 'Gramo echo', Author.new('author:1'), nil, [Comment.new('comment:4', 'Skalar')]) }
+  let(:decorator) { ArticleDecorator.for_collection.new([article, article2, article3]) }
 
-  it "renders full document" do
+  it 'renders full document' do
     json = decorator.to_json
     json.must_equal_json(%({
       "data": [{
@@ -211,7 +211,7 @@ class JsonapiCollectionRenderTest < MiniTest::Spec
     }))
   end
 
-  it "included: false suppresses compound docs" do
+  it 'included: false suppresses compound docs' do
     json = decorator.to_json(included: false)
     json.must_equal_json(%({
       "data": [{
@@ -362,16 +362,14 @@ class JsonapiCollectionRenderTest < MiniTest::Spec
     }))
   end
 
-  it "passes :user_options to toplevel links when rendering" do
+  it 'passes :user_options to toplevel links when rendering' do
     hash = decorator.to_hash(user_options: { page: 2, per_page: 10 })
-    hash['links'].must_equal({
-      "self" => "//articles?page=2&per_page=10"
-    })
+    hash['links'].must_equal('self' => '//articles?page=2&per_page=10')
   end
 
   it 'renders additional meta information if meta option supplied' do
     hash = decorator.to_hash('meta' => { page: 2, total: 9 })
-    hash['meta'].must_equal("count" => 3, page: 2, total: 9)
+    hash['meta'].must_equal('count' => 3, page: 2, total: 9)
   end
 
   it 'does not render additional meta information if meta option is empty' do
@@ -380,7 +378,7 @@ class JsonapiCollectionRenderTest < MiniTest::Spec
     hash['meta'][:total].must_be_nil
   end
 
-  describe "Fetching Resources (empty collection)" do
+  describe 'Fetching Resources (empty collection)' do
     let(:document) {
       %({
         "data": [],
