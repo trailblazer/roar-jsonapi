@@ -1,9 +1,9 @@
 Author = Struct.new(:id, :email, :name) do
   def self.find_by(options)
-    AuthorNine if options[:id].to_s=="9"
+    AuthorNine if options[:id].to_s == '9'
   end
 end
-AuthorNine = Author.new(9, "9@nine.to")
+AuthorNine = Author.new(9, '9@nine.to')
 
 Article = Struct.new(:id, :title, :author, :editor, :comments) do
   def reviewers
@@ -12,9 +12,31 @@ Article = Struct.new(:id, :title, :author, :editor, :comments) do
 end
 
 Comment = Struct.new(:id, :body) do
-  def self.find_by(options)
+  def self.find_by(_options)
     new
   end
+end
+
+class AuthorDecorator < Roar::Decorator
+  include Roar::JSON::JSONAPI
+  type :authors
+
+  attributes do
+    property :email
+  end
+
+  link(:self) { "http://authors/#{represented.id}" }
+end
+
+class CommentDecorator < Roar::Decorator
+  include Roar::JSON::JSONAPI
+  type :comments
+
+  attributes do
+    property :body
+  end
+
+  link(:self) { "http://comments/#{represented.id}" }
 end
 
 class ArticleDecorator < Roar::Decorator
@@ -26,7 +48,7 @@ class ArticleDecorator < Roar::Decorator
     if options
       "//articles?page=#{options[:page]}&per_page=#{options[:per_page]}"
     else
-      "//articles"
+      '//articles'
     end
   end
 
@@ -34,9 +56,9 @@ class ArticleDecorator < Roar::Decorator
     property :count
   end
 
-  # attributes: {}
-  property :id
-  property :title
+  attributes do
+    property :title
+  end
 
   meta do
     collection :reviewers
@@ -44,7 +66,7 @@ class ArticleDecorator < Roar::Decorator
 
   meta do
     property :reviewer_initials, getter: ->(_) {
-      reviewers.map {|reviewer|
+      reviewers.map { |reviewer|
         reviewer.split.map { |name| "#{name[0]}." }.join
       }.join(', ')
     }
@@ -54,17 +76,13 @@ class ArticleDecorator < Roar::Decorator
   link(:self) { "http://#{represented.class}/#{represented.id}" }
 
   # relationships
-  has_one :author, class: Author, populator: ::Representable::FindOrInstantiate do # populator is for parsing, only.
-    type :authors
+  has_one :author, class: Author, decorator: AuthorDecorator,
+    populator: ::Representable::FindOrInstantiate do # populator is for parsing, only.
 
     relationship do
       link(:self)     { "/articles/#{represented.id}/relationships/author" }
       link(:related)  { "/articles/#{represented.id}/author" }
     end
-
-    property :id
-    property :email
-    link(:self) { "http://authors/#{represented.id}" }
   end
 
   has_one :editor do
@@ -76,13 +94,14 @@ class ArticleDecorator < Roar::Decorator
       end
     end
 
-    property :id
-    property :email
+    attributes do
+      property :email
+    end
     # No self link for editors because we want to make sure the :links option does not appear in the hash.
   end
 
-  has_many :comments, class: Comment, populator: ::Representable::FindOrInstantiate do
-    type :comments
+  has_many :comments, class: Comment, decorator: CommentDecorator,
+    populator: ::Representable::FindOrInstantiate do
 
     relationship do
       link(:self)     { "/articles/#{represented.id}/relationships/comments" }
@@ -92,9 +111,5 @@ class ArticleDecorator < Roar::Decorator
         property :count, as: 'comment-count'
       end
     end
-
-    property :id
-    property :body
-    link(:self) { "http://comments/#{represented.id}" }
   end
 end

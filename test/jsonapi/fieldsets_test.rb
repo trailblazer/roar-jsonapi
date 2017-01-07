@@ -1,170 +1,205 @@
-require "test_helper"
-require "roar/json/json_api"
-require "json"
-require "jsonapi/representer"
+require 'test_helper'
+require 'roar/json/json_api'
+require 'json'
 
 class JSONAPIFieldsetsTest < Minitest::Spec
   Article = Struct.new(:id, :title, :summary, :comments, :author)
   Comment = Struct.new(:id, :body, :good)
   Author = Struct.new(:id, :name, :email)
 
-  let (:comments) { [Comment.new("c:1", "Cool!", true), Comment.new("c:2", "Nah", false)] }
+  let(:comments) { [Comment.new('c:1', 'Cool!', true), Comment.new('c:2', 'Nah', false)] }
 
-  describe "Single Resource Object With Options" do
+  describe 'Single Resource Object With Options' do
     class DocumentSingleResourceObjectDecorator < Roar::Decorator
       include Roar::JSON::JSONAPI
       type :articles
 
-      property :id
-      property :title
-      property :summary
+      attributes do
+        property :title
+        property :summary
+      end
 
       has_many :comments do
         type :comments
 
-        property :id
-        property :body
-        property :good
+        attributes do
+          property :body
+          property :good
+        end
       end
 
       has_one :author do
-        type :author
+        type :authors
 
-        property :id
-        property :name
-        property :email
+        attributes do
+          property :name
+          property :email
+        end
       end
     end
 
-    let (:article) { Article.new(1, "My Article", "An interesting read.", comments, Author.new("a:1", "Celso", "celsito@trb.to")) }
+    let(:article) { Article.new(1, 'My Article', 'An interesting read.', comments, Author.new('a:1', 'Celso', 'celsito@trb.to')) }
 
-    it "includes scalars" do
-      DocumentSingleResourceObjectDecorator.new(article).
-        to_json(include: [:title]).
-        must_equal( {
-          "data" => {
-            "type" => "articles",
-            "id" => "1",
-            "attributes" => {
-              "title" => "My Article"
+    it 'includes scalars' do
+      DocumentSingleResourceObjectDecorator.new(article)
+                                           .to_json(attributes:    { include: [:title] },
+                                                    included:      { include: [] },
+                                                    relationships: { include: [] })
+                                           .must_equal_json(%(
+          {
+            "data": {
+              "id": "1",
+              "attributes": {
+                "title": "My Article"
+              },
+              "type": "articles"
             }
           }
-        }.to_json )
+        ))
     end
 
-    it "includes compound objects" do
-      DocumentSingleResourceObjectDecorator.new(article).
-        to_hash(
-          include:  [:id, :title, :included],
-          included: {include: [:comments]}).
-        must_equal Hash[{
-          'data'=>
-            {'type'=>"articles",
-             'id'=>"1",
-             'attributes'=>{"title"=>"My Article"},
+    it 'includes compound objects' do
+      DocumentSingleResourceObjectDecorator.new(article)
+                                           .to_json(
+                                             attributes:    { include: [:id, :title] },
+                                             included:      { include: [:comments] },
+                                             relationships: { include: [] }
+                                           )
+                                           .must_equal_json(%(
+          {
+            "data": {
+              "id": "1",
+              "attributes": {
+                "title": "My Article"
+              },
+              "type": "articles"
             },
-           'included'=>
-            [{'type'=>"comments",
-              'id'=>"c:1",
-              'attributes'=>{"body"=>"Cool!", "good"=>true}},
-             {'type'=>"comments",
-              'id'=>"c:2",
-              'attributes'=>{"body"=>"Nah", "good"=>false}}
+            "included": [
+              {
+                "type": "comments",
+                "id": "c:1",
+                "attributes": {
+                  "body": "Cool!",
+                  "good": true
+                }
+              },
+              {
+                "type": "comments",
+                "id": "c:2",
+                "attributes": {
+                  "body": "Nah",
+                  "good": false
+                }
+              }
             ]
-        }]
-        # must_equal document.to_json
+          }
+        ))
     end
 
-    it "includes other compound objects" do
-      DocumentSingleResourceObjectDecorator.new(article).
-        to_hash(
-          include:  [:title, :included],
-          included: {include: [:author]}).
-        must_equal Hash[{
-          'data'=>
-            {'type'=>"articles",
-             'id'=>"1",
-             'attributes'=>{"title"=>"My Article"},
+    it 'includes other compound objects' do
+      DocumentSingleResourceObjectDecorator.new(article)
+                                           .to_json(attributes:    { include: [:title] },
+                                                    included:      { include: [:author] },
+                                                    relationships: { include: [] })
+                                           .must_equal_json(%(
+          {
+            "data": {
+              "id": "1",
+              "attributes": {
+                "title": "My Article"
+              },
+              "type": "articles"
             },
-           'included'=>
-            [{'type'=>"author", 'id'=>"a:1", 'attributes'=>{"name"=>"Celso", "email"=>"celsito@trb.to"}}]
-        }]
-        # must_equal document.to_json
+            "included": [
+              {
+                "type": "authors",
+                "id": "a:1",
+                "attributes": {
+                  "email": "celsito@trb.to",
+                  "name": "Celso"
+                }
+              }
+            ]
+          }
+        ))
     end
 
-    describe "collection" do
-      it "supports :includes" do
-        DocumentSingleResourceObjectDecorator.for_collection.new([article]).
-          to_hash(
-            include:  [:title, :included],
-            included: {include: [:author]}).
-          must_equal Hash[{
-            'data'=>[
-              {'type'=>"articles",
-               'id'=>"1",
-               'attributes'=>{"title"=>"My Article"},
-              }],
-            'included'=>
-              [{'type'=>"author", 'id'=>"a:1", 'attributes'=>{"name"=>"Celso", "email"=>"celsito@trb.to"}}]
-          }]
+    describe 'collection' do
+      it 'supports :includes' do
+        DocumentSingleResourceObjectDecorator.for_collection.new([article])
+                                             .to_hash(attributes:    { include: [:title] },
+                                                      included:      { include: [:author] },
+                                                      relationships: { include: [] })
+                                             .must_equal Hash[{
+                                               'data'     => [
+                                                 { 'type'       => 'articles',
+                                                   'id'         => '1',
+                                                   'attributes' => { 'title'=>'My Article' } }
+                                               ],
+                                               'included' =>
+                                                             [{ 'type' => 'authors', 'id' => 'a:1', 'attributes' => { 'name' => 'Celso', 'email' => 'celsito@trb.to' } }]
+                                             }]
       end
 
       # include: ROAR API
-      it "blaaaaaaa" do
-        DocumentSingleResourceObjectDecorator.for_collection.new([article]).
-          to_hash(
-            include:  [:title, :author],
-            fields: {author: [:email]}
-          ).
-          must_equal Hash[{
-            'data'=>[
-              {'type'=>"articles",
-               'id'=>"1",
-               'attributes'=>{"title"=>"My Article"},
-              }],
-            'included'=>
-              [{'type'=>"author", 'id'=>"a:1", 'attributes'=>{"email"=>"celsito@trb.to"}}]
-          }]
+      it 'blaaaaaaa' do
+        skip 'rework included API'
+        DocumentSingleResourceObjectDecorator.for_collection.new([article])
+                                             .to_hash(
+                                               attributes:    { include: [:title] },
+                                               included:      { include: { author: [:email] } },
+                                               relationships: { include: [] }
+                                             )
+                                             .must_equal Hash[{
+                                               'data'     => [
+                                                 { 'type'       => 'articles',
+                                                   'id'         => '1',
+                                                   'attributes' => { 'title'=>'My Article' } }
+                                               ],
+                                               'included' =>
+                                                             [{ 'type' => 'author', 'id' => 'a:1', 'attributes' => { 'email'=>'celsito@trb.to' } }]
+                                             }]
       end
     end
   end
 
-  describe "Collection Resources With Options" do
+  describe 'Collection Resources With Options' do
     class CollectionResourceObjectDecorator < Roar::Decorator
       include Roar::JSON::JSONAPI
       type :articles
 
-      property :id
-      property :title
-      property :summary
+      attributes do
+        property :title
+        property :summary
+      end
     end
 
     let(:document) {
-      {
-        "data" => [
+      %({
+        "data": [
           {
-            "type" => "articles",
-            "id" => "1",
-            "attributes" => {
-              "title" => "My Article"
-            }
+            "id": "1",
+            "attributes": {
+              "title": "My Article"
+            },
+            "type": "articles"
           },
           {
-            "type" => "articles",
-            "id" => "2",
-            "attributes" => {
-              "title" => "My Other Article"
-            }
+            "id": "2",
+            "attributes": {
+              "title": "My Other Article"
+            },
+            "type": "articles"
           }
         ]
-      }
+      })
     }
 
     it do
       CollectionResourceObjectDecorator.for_collection.new([
-        Article.new(1, "My Article", "An interesting read."),
-        Article.new(2, "My Other Article", "An interesting read.")
-      ]).to_json(include: [:title, :id]).must_equal document.to_json
+                                                             Article.new(1, 'My Article', 'An interesting read.'),
+                                                             Article.new(2, 'My Other Article', 'An interesting read.')
+                                                           ]).to_json(attributes: { include: [:title] }).must_equal_json document
     end
   end
 end

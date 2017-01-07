@@ -10,6 +10,10 @@ module Roar
           @type = name.to_s
         end
 
+        def attributes(&block)
+          nested(:attributes, inherit: true, &block)
+        end
+
         def link(name, options = {}, &block)
           return super(name, &block) unless options[:toplevel]
           for_collection.link(name, &block)
@@ -20,7 +24,12 @@ module Roar
           for_collection.meta(&block)
         end
 
-        def relationship(options = {}, &block); end
+        def relationship(&block)
+          return (@relationship ||= -> {}) unless block
+
+          heritage.record(:relationship, &block)
+          @relationship = block
+        end
 
         def has_one(name, options = {}, &block)
           has_relationship(name, options.merge(collection: false), &block)
@@ -33,41 +42,23 @@ module Roar
         private
 
         def has_relationship(name, options = {}, &block)
-          # every nested representer is a full-blown JSONAPI representer.
-          nested(:included, inherit: true) do
-            property(name, collection: options[:collection]) {
-              include Roar::JSON::JSONAPI
+          resource_decorator = options[:decorator] || options[:extends] ||
+                               Class.new(Roar::Decorator).tap { |decorator|
+                                 decorator.send(:include, Roar::JSON::JSONAPI)
+                               }
+          resource_decorator.instance_exec(&block)
 
-              instance_exec(&block)
-
-              def from_document(hash)
-                hash
-              end
-            }
+          resource_identifier_representer = Class.new(resource_decorator)
+          resource_identifier_representer.class_eval do
+            def to_hash(_options = {})
+              super(include: [:id, :meta], wrap: false)
+            end
           end
 
-          resource_identifier_representer = Class.new(Roar::Decorator)
-          resource_identifier_representer.class_eval do
-            include Roar::JSON
-            include Roar::Hypermedia
-            include JSONAPI::Meta
-            extend JSONAPI::Declarative
-
-            def self.relationship_block
-              @relationship_block ||= -> {}
-            end
-
-            def self.relationship(&block)
-              @relationship_block = block
-            end
-
-            instance_exec(&block)
-
-            def to_hash(_options)
-              hash = { 'type' => self.class.type }.merge(super(include: [:id, :meta]))
-              hash['id'] = hash['id'].to_s
-              hash
-            end
+          nested(:included, inherit: true) do
+            property(name, collection: options[:collection],
+                           decorator:  resource_decorator,
+                           wrap:       false)
           end
 
           nested(:relationships, inherit: true) do
@@ -89,20 +80,23 @@ module Roar
                                            },
                                            render_nil:   true,
                                            render_empty: true,
-                                           decorator:    resource_identifier_representer)
+                                           decorator:    resource_identifier_representer,
+                                           wrap:         false)
 
-              instance_exec(&resource_identifier_representer.relationship_block)
+              instance_exec(&resource_identifier_representer.relationship)
 
+              # rubocop:disable Lint/NestedMethodDefinition
               def to_hash(*)
                 hash  = super
                 links = Renderer::Links.new.(hash, {})
                 meta  = render_meta({})
 
-                Fragment::Links.(hash, links, {})
-                Fragment::Meta.(hash, meta, {})
+                HashUtils.store_if_any(hash, 'links', links)
+                HashUtils.store_if_any(hash, 'meta',  meta)
 
                 hash
               end
+              # rubocop:enable Lint/NestedMethodDefinition
             end
           end
         end

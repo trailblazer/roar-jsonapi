@@ -22,7 +22,6 @@ class SongsRepresenter < Roar::Decorator
   include Roar::JSON::JSONAPI
   type :songs
 
-  property :id
   property :title
 end
 ```
@@ -67,7 +66,6 @@ class SongsRepresenter < Roar::Decorator
 
 compound do
   property :album do
-    property :id
     property :title
   end
 

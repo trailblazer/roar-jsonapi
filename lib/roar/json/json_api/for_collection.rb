@@ -2,34 +2,33 @@ module Roar
   module JSON
     module JSONAPI
       module ForCollection
-        def collection_representer!(_options) # FIXME: cache.
+        def collection_representer!(_options)
           singular = self # e.g. Song::Representer
 
-          # this basically does Module.new { include Hash::Collection .. }
           nested_builder.(_base: default_nested_class, _features: [Roar::JSON, Roar::Hypermedia, JSONAPI::Meta], _block: proc do
-            collection :to_a, decorator: singular # render/parse every item using the singular representer.
+            collection :to_a, as: :data, decorator: singular, wrap: false
 
-            # toplevel links are defined here, as in
-            # link(:self) { .. }
-
+            # rubocop:disable Metrics/MethodLength
+            # rubocop:disable Lint/NestedMethodDefinition
             def to_hash(options = {})
-              hash = super(to_a: options, user_options: options[:user_options]) # [{data: {..}, data: {..}}]
-              collection = hash['to_a']
-              meta       = render_meta(options)
+              document = super(to_a: options, user_options: options[:user_options]) # [{data: {..}, data: {..}}]
 
-              document = { 'data' => [] }
+              links = Renderer::Links.new.(document, options)
+              meta  = render_meta(options)
               included = []
-              collection.each do |single|
-                document['data'] << single['data']
+              document['data'].each do |single|
                 included += single.delete('included') || []
               end
 
-              Fragment::Links.(document, Renderer::Links.new.(hash, {}), options)
-              Fragment::Included.(document, included, options)
-              Fragment::Meta.(document, meta, options)
+              HashUtils.store_if_any(document, 'included',
+                                     Fragment::Included.(included, options))
+              HashUtils.store_if_any(document, 'links',    links)
+              HashUtils.store_if_any(document, 'meta',     meta)
 
               document
             end
+            # rubocop:enable Lint/NestedMethodDefinition
+            # rubocop:enable Metrics/MethodLength
           end)
         end
       end

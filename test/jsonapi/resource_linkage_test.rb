@@ -3,28 +3,30 @@
 require 'test_helper'
 require 'roar/json/json_api'
 require 'json'
-require 'jsonapi/representer'
 
 class ResourceLinkageTest < MiniTest::Spec
   class RecipeDecorator < Roar::Decorator
     include Roar::JSON::JSONAPI
     type :recipes
 
-    property :id
-    property :name
+    attributes do
+      property :name
+    end
 
     has_one :chef do
       type :chefs
 
-      property :id
-      property :name
+      attributes do
+        property :name
+      end
     end
 
     has_many :ingredients do
       type :ingredients
 
-      property :id
-      property :name
+      attributes do
+        property :name
+      end
     end
   end
 
