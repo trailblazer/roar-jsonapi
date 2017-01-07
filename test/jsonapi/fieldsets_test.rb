@@ -29,7 +29,7 @@ class JSONAPIFieldsetsTest < Minitest::Spec
       end
 
       has_one :author do
-        type :author
+        type :authors
 
         attributes do
           property :name
@@ -112,7 +112,7 @@ class JSONAPIFieldsetsTest < Minitest::Spec
             },
             "included": [
               {
-                "type": "author",
+                "type": "authors",
                 "id": "a:1",
                 "attributes": {
                   "email": "celsito@trb.to",
@@ -137,7 +137,7 @@ class JSONAPIFieldsetsTest < Minitest::Spec
                                                    'attributes' => { 'title'=>'My Article' } }
                                                ],
                                                'included' =>
-                                                             [{ 'type' => 'author', 'id' => 'a:1', 'attributes' => { 'name' => 'Celso', 'email' => 'celsito@trb.to' } }]
+                                                             [{ 'type' => 'authors', 'id' => 'a:1', 'attributes' => { 'name' => 'Celso', 'email' => 'celsito@trb.to' } }]
                                              }]
       end
 
