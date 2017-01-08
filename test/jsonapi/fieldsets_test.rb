@@ -143,11 +143,15 @@ class JSONAPIFieldsetsTest < Minitest::Spec
 
       # include: ROAR API
       it 'blaaaaaaa' do
-        skip 'rework included API'
         DocumentSingleResourceObjectDecorator.for_collection.new([article])
                                              .to_hash(
                                                attributes:    { include: [:title] },
-                                               included:      { include: { author: [:email] } },
+                                               included:      { include: [:author],
+                                                                author:  {
+                                                                  attributes: {
+                                                                    include: [:email]
+                                                                  }
+                                                                } },
                                                relationships: { include: [] }
                                              )
                                              .must_equal Hash[{
@@ -157,7 +161,7 @@ class JSONAPIFieldsetsTest < Minitest::Spec
                                                    'attributes' => { 'title'=>'My Article' } }
                                                ],
                                                'included' =>
-                                                             [{ 'type' => 'author', 'id' => 'a:1', 'attributes' => { 'email'=>'celsito@trb.to' } }]
+                                                             [{ 'type' => 'authors', 'id' => 'a:1', 'attributes' => { 'email'=>'celsito@trb.to' } }]
                                              }]
       end
     end
