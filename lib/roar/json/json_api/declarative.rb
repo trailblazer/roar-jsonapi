@@ -46,7 +46,7 @@ module Roar
                                Class.new(Roar::Decorator).tap { |decorator|
                                  decorator.send(:include, Roar::JSON::JSONAPI)
                                }
-          resource_decorator.instance_exec(&block)
+          resource_decorator.instance_exec(&block) if block
 
           resource_identifier_representer = Class.new(resource_decorator)
           resource_identifier_representer.class_eval do
