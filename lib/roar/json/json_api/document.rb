@@ -49,7 +49,7 @@ module Roar
         #
         # @api public
         def to_hash(options = {})
-          document  = super(Options::Include.(options, relationship_type_mappings))
+          document  = super(Options::Include.(options, mappings))
           unwrapped = options[:wrap] == false
           resource  = unwrapped ? document : document['data']
           resource['type'] = JSONAPI::MemberName.(self.class.type)
@@ -74,18 +74,27 @@ module Roar
 
         private
 
-        def relationship_type_mappings
-          @relationship_type_mappings ||= begin
-            mappings = included_definitions.each_with_object({}) do |definition, hash|
-              hash[definition.name] = definition.representer_module.type
-            end
-            mappings['_self'] = self.class.type
+        def mappings
+          @mappings ||= begin
+            mappings = {}
+            mappings[:id]             = find_id_mapping
+            mappings[:relationships]  = find_relationship_mappings
+            mappings[:relationships]['_self'] = self.class.type
             mappings
           end
         end
 
-        def included_definitions
-          self.class.definitions['included'].representer_module.definitions
+        def find_id_mapping
+          self.class.definitions.detect { |definition|
+            definition[:as] && definition[:as].evaluate(:value) == 'id'
+          }.name
+        end
+
+        def find_relationship_mappings
+          included_definitions = self.class.definitions['included'].representer_module.definitions
+          included_definitions.each_with_object({}) do |definition, hash|
+            hash[definition.name] = definition.representer_module.type
+          end
         end
       end
     end

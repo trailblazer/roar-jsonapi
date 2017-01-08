@@ -6,8 +6,7 @@ require 'json'
 
 class ResourceLinkageTest < MiniTest::Spec
   class ChefDecorator < Roar::Decorator
-    include Roar::JSON::JSONAPI
-    type :chefs
+    include Roar::JSON::JSONAPI.resource :chefs
 
     attributes do
       property :name
@@ -15,8 +14,7 @@ class ResourceLinkageTest < MiniTest::Spec
   end
 
   class IngredientDecorator < Roar::Decorator
-    include Roar::JSON::JSONAPI
-    type :ingredients
+    include Roar::JSON::JSONAPI.resource :ingredients
 
     attributes do
       property :name
@@ -24,8 +22,7 @@ class ResourceLinkageTest < MiniTest::Spec
   end
 
   class RecipeDecorator < Roar::Decorator
-    include Roar::JSON::JSONAPI
-    type :recipes
+    include Roar::JSON::JSONAPI.resource :recipes
 
     attributes do
       property :name

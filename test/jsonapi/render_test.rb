@@ -166,8 +166,7 @@ class JsonapiRenderTest < MiniTest::Spec
 
   describe 'Single Resource Object with simple attributes' do
     class DocumentSingleResourceObjectDecorator < Roar::Decorator
-      include Roar::JSON::JSONAPI
-      type :articles
+      include Roar::JSON::JSONAPI.resource :articles
 
       attributes do
         property :title
@@ -206,8 +205,7 @@ class JsonapiRenderTest < MiniTest::Spec
 
   describe 'Single Resource Object with complex attributes' do
     class VisualArtistDecorator < Roar::Decorator
-      include Roar::JSON::JSONAPI
-      type :visual_artists
+      include Roar::JSON::JSONAPI.resource :visual_artists
 
       attributes do
         property :name

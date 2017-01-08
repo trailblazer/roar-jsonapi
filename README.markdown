@@ -17,8 +17,7 @@ A minimal representation of a Resource can be defined as follows:
 require 'roar/json/json_api'
 
 class SongsRepresenter < Roar::Decorator
-  include Roar::JSON::JSONAPI
-  type :songs
+  include Roar::JSON::JSONAPI.resource :songs
 
   attributes do
     property :title
@@ -38,6 +37,8 @@ or a standalone representer (specified with the `extend:` or `decorates:` option
 
 ```ruby
 class SongsRepresenter < Roar::Decorator
+  include Roar::JSON::JSONAPI.resource :songs
+
   has_one :album do
     property :title
   end
@@ -54,12 +55,13 @@ You can define meta information on your collection object and then let Roar comp
 
 ```ruby
 class SongsRepresenter < Roar::Decorator
-  # ..
+  include Roar::JSON::JSONAPI.resource :songs
 
   meta toplevel: true do
     property :page
     property :total
   end
+end
 ```
 
 Your collection object must expose the respective methods.
@@ -81,7 +83,7 @@ Both methods work for singular documents too.
 
 ```ruby
 class SongsRepresenter < Roar::Decorator
-  # ..
+  include Roar::JSON::JSONAPI.resource :songs
 
   meta do
     property :label

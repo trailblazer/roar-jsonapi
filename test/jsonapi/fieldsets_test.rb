@@ -9,8 +9,7 @@ class JSONAPIFieldsetsTest < Minitest::Spec
 
   describe 'Single Resource Object With Options' do
     class DocumentSingleResourceObjectDecorator < Roar::Decorator
-      include Roar::JSON::JSONAPI
-      type :articles
+      include Roar::JSON::JSONAPI.resource :articles
 
       attributes do
         property :title
@@ -18,8 +17,6 @@ class JSONAPIFieldsetsTest < Minitest::Spec
       end
 
       has_many :comments do
-        type :comments
-
         attributes do
           property :body
           property :good
@@ -255,8 +252,7 @@ class JSONAPIFieldsetsTest < Minitest::Spec
 
   describe 'Collection Resources With Options' do
     class CollectionResourceObjectDecorator < Roar::Decorator
-      include Roar::JSON::JSONAPI
-      type :articles
+      include Roar::JSON::JSONAPI.resource :articles
 
       attributes do
         property :title

@@ -8,7 +8,7 @@ module Roar
         #
         # @see Document#to_hash
         class Include
-          DEFAULT_INTERNAL_INCLUDES = [:id, :attributes, :relationships].freeze
+          DEFAULT_INTERNAL_INCLUDES = [:attributes, :relationships].freeze
 
           def self.call(options, mappings)
             new.(options, mappings)
@@ -19,8 +19,10 @@ module Roar
             return options if options[:_json_api_parsed] || !(include || fields)
 
             internal_options = {}
-            rewrite_include_option!(internal_options, include)
-            rewrite_fields!(internal_options, fields, mappings)
+            rewrite_include_option!(internal_options, include,
+                                    mappings.fetch(:id, :id))
+            rewrite_fields!(internal_options, fields,
+                            mappings.fetch(:relationships, {}))
 
             options.reject { |key, _| [:include, :fields].include?(key) }
                    .merge(internal_options)
@@ -28,20 +30,23 @@ module Roar
 
           private
 
-          def rewrite_include_option!(options, include)
+          def rewrite_include_option!(options, include, id_mapping)
             include_paths      = parse_include_option(include)
-            options[:include]  = DEFAULT_INTERNAL_INCLUDES + [:included]
+            default_includes   = [id_mapping.to_sym] + DEFAULT_INTERNAL_INCLUDES
+            options[:include]  = default_includes + [:included]
             options[:included] = { include: include_paths.map(&:first) - [:_self] }
             include_paths.each do |include_path|
-              options[:included].merge!(explode_include_path(*include_path))
+              options[:included].merge!(
+                explode_include_path(*include_path, default_includes)
+              )
             end
             options
           end
 
-          def rewrite_fields!(options, fields, mappings)
+          def rewrite_fields!(options, fields, rel_mappings)
             (fields || {}).each do |type, raw_value|
               fields_value      = parse_fields_value(raw_value)
-              relationship_name = (mappings.key(type.to_s) || type).to_sym
+              relationship_name = (rel_mappings.key(type.to_s) || type).to_sym
               if relationship_name == :_self
                 options[:attributes]     = { include: fields_value }
                 options[:relationships]  = { include: fields_value }
@@ -66,11 +71,11 @@ module Roar
             Array(fields_value).flat_map { |v| v.to_s.split(',') }.map(&:to_sym)
           end
 
-          def explode_include_path(*include_path)
+          def explode_include_path(*include_path, default_includes)
             head, *tail = *include_path
             hash        = {}
             result      = hash[head] ||= {
-              include: DEFAULT_INTERNAL_INCLUDES.dup, _json_api_parsed: true
+              include: default_includes.dup, _json_api_parsed: true
             }
 
             tail.each do |key|
@@ -80,7 +85,7 @@ module Roar
               result[:included] ||= {}
 
               result = result[:included][key] ||= {
-                include: DEFAULT_INTERNAL_INCLUDES.dup, _json_api_parsed: true
+                include: default_includes.dup, _json_api_parsed: true
               }
             end
 
