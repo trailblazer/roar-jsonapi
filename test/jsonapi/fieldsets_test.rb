@@ -42,9 +42,10 @@ class JSONAPIFieldsetsTest < Minitest::Spec
 
     it 'includes scalars' do
       DocumentSingleResourceObjectDecorator.new(article)
-                                           .to_json(attributes:    { include: [:title] },
-                                                    included:      { include: [] },
-                                                    relationships: { include: [] })
+                                           .to_json(
+                                             fields:   { articles: [:title] },
+                                             mappings: { _self: :articles }
+                                           )
                                            .must_equal_json(%(
           {
             "data": {
@@ -61,9 +62,9 @@ class JSONAPIFieldsetsTest < Minitest::Spec
     it 'includes compound objects' do
       DocumentSingleResourceObjectDecorator.new(article)
                                            .to_json(
-                                             attributes:    { include: [:id, :title] },
-                                             included:      { include: [:comments] },
-                                             relationships: { include: [] }
+                                             fields:   { articles: [:title] },
+                                             include:  [:comments],
+                                             mappings: { _self: :articles }
                                            )
                                            .must_equal_json(%(
           {
@@ -98,9 +99,11 @@ class JSONAPIFieldsetsTest < Minitest::Spec
 
     it 'includes other compound objects' do
       DocumentSingleResourceObjectDecorator.new(article)
-                                           .to_json(attributes:    { include: [:title] },
-                                                    included:      { include: [:author] },
-                                                    relationships: { include: [] })
+                                           .to_json(
+                                             fields:   { articles: [:title] },
+                                             include:  [:author],
+                                             mappings: { _self: :articles }
+                                           )
                                            .must_equal_json(%(
           {
             "data": {
@@ -127,9 +130,11 @@ class JSONAPIFieldsetsTest < Minitest::Spec
     describe 'collection' do
       it 'supports :includes' do
         DocumentSingleResourceObjectDecorator.for_collection.new([article])
-                                             .to_hash(attributes:    { include: [:title] },
-                                                      included:      { include: [:author] },
-                                                      relationships: { include: [] })
+                                             .to_hash(
+                                               fields:   { articles: [:title] },
+                                               include:  [:author],
+                                               mappings: { _self: :articles }
+                                             )
                                              .must_equal Hash[{
                                                'data'     => [
                                                  { 'type'       => 'articles',
@@ -145,14 +150,9 @@ class JSONAPIFieldsetsTest < Minitest::Spec
       it 'blaaaaaaa' do
         DocumentSingleResourceObjectDecorator.for_collection.new([article])
                                              .to_hash(
-                                               attributes:    { include: [:title] },
-                                               included:      { include: [:author],
-                                                                author:  {
-                                                                  attributes: {
-                                                                    include: [:email]
-                                                                  }
-                                                                } },
-                                               relationships: { include: [] }
+                                               fields:   { articles: [:title], authors: [:email] },
+                                               include:  [:author],
+                                               mappings: { _self: :articles, author: :authors }
                                              )
                                              .must_equal Hash[{
                                                'data'     => [
@@ -203,7 +203,10 @@ class JSONAPIFieldsetsTest < Minitest::Spec
       CollectionResourceObjectDecorator.for_collection.new([
                                                              Article.new(1, 'My Article', 'An interesting read.'),
                                                              Article.new(2, 'My Other Article', 'An interesting read.')
-                                                           ]).to_json(attributes: { include: [:title] }).must_equal_json document
+                                                           ]).to_json(
+                                                             fields:   { articles: [:title] },
+                                                             mappings: { _self: :articles }
+                                                           ).must_equal_json document
     end
   end
 end
