@@ -5,8 +5,10 @@ class FieldsetsOptionsTest < Minitest::Spec
   Include = Roar::JSON::JSONAPI::Options::Include
 
   it 'rewrites JSON API fields: and includes: options' do
-    options = Include.(include: [:articles],
-                       fields:  { articles: [:title, :body], people: [] })
+    options = Include.({
+                         include: [:articles],
+                         fields:  { articles: [:title, :body], people: [] }
+                       }, {})
     options.must_equal(include:  [:id, :included],
                        included: {
                          include:  [:articles],
@@ -26,9 +28,11 @@ class FieldsetsOptionsTest < Minitest::Spec
   end
 
   it 'maps _self to a type' do
-    options = Include.(include:  [],
-                       fields:   { articles: [:title, :body], people: [] },
-                       mappings: { _self: :articles })
+    options = Include.({
+                         include: [],
+                         fields:  { articles: [:title, :body], people: [] }
+                       },
+                       _self: :articles)
     options.must_equal(include:       [:id, :included, :attributes, :relationships],
                        included:      {
                          include: [],
@@ -44,9 +48,11 @@ class FieldsetsOptionsTest < Minitest::Spec
   end
 
   it 'maps a relationship name to a type' do
-    options = Include.(include:  [:author],
-                       fields:   { articles: [:title, :body], people: [:email] },
-                       mappings: { author: :people })
+    options = Include.({
+                         include: [:author],
+                         fields:  { articles: [:title, :body], people: [:email] }
+                       },
+                       author: :people)
     options.must_equal(include:  [:id, :included],
                        included: {
                          include:  [:author],
