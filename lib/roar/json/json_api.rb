@@ -5,6 +5,7 @@ require 'set'
 require 'roar/json/json_api/meta'
 require 'roar/json/json_api/declarative'
 require 'roar/json/json_api/for_collection'
+require 'roar/json/json_api/options'
 require 'roar/json/json_api/document'
 
 module Roar
