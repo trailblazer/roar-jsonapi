@@ -45,12 +45,12 @@ module Roar
                 options[:attributes]     = { include: value }
                 options[:relationships]  = { include: value }
               else
-                options[:included][relationship_name] = {
-                  include:          DEFAULT_INTERNAL_INCLUDES.dup,
+                options[:included][relationship_name] ||= {}
+                options[:included][relationship_name].merge!(
                   attributes:       { include: value },
                   relationships:    { include: value },
                   _json_api_parsed: true # flag to halt recursive parsing
-                }
+                )
               end
             end
           end
