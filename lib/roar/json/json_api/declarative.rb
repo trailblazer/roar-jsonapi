@@ -51,7 +51,7 @@ module Roar
           resource_identifier_representer = Class.new(resource_decorator)
           resource_identifier_representer.class_eval do
             def to_hash(_options = {})
-              super(include: [:id, :meta], wrap: false)
+              super(fields: { self.class.type.to_sym => [] }, include: [], wrap: false)
             end
           end
 
