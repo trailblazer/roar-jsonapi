@@ -7,13 +7,13 @@ module Roar
         Include = ->(options) do
           return options if options[:_json_api_parsed] || !(options[:include] || options[:fields])
 
-          _include  = options[:include]   || []
+          include   = options[:include]   || []
           fields    = options[:fields]    || {}
           mappings  = options[:mappings]  || {}
 
           internal_options = {}
           internal_options[:include]  = [:id, :included]
-          internal_options[:included] = { include: _include - [:_self] }
+          internal_options[:included] = { include: include - [:_self] }
           fields.each do |type, value|
             if mappings.key(type) == :_self
               internal_options[:include] << :attributes << :relationships
