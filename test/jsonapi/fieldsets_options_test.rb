@@ -9,17 +9,17 @@ class FieldsetsOptionsTest < Minitest::Spec
                          include: [:articles],
                          fields:  { articles: [:title, :body], people: [] }
                        }, {})
-    options.must_equal(include:  [:id, :included],
+    options.must_equal(include:  [:id, :attributes, :relationships, :included],
                        included: {
                          include:  [:articles],
                          articles: {
-                           include:          [:id, :included, :attributes, :relationships],
+                           include:          [:id, :attributes, :relationships],
                            attributes:       { include: [:title, :body] },
                            relationships:    { include: [:title, :body] },
                            _json_api_parsed: true
                          },
                          people:   {
-                           include:          [:id, :included, :attributes, :relationships],
+                           include:          [:id, :attributes, :relationships],
                            attributes:       { include: [] },
                            relationships:    { include: [] },
                            _json_api_parsed: true
@@ -33,11 +33,11 @@ class FieldsetsOptionsTest < Minitest::Spec
                          fields:  { articles: [:title, :body], people: [] }
                        },
                        _self: :articles)
-    options.must_equal(include:       [:id, :included, :attributes, :relationships],
+    options.must_equal(include:       [:id, :attributes, :relationships, :included],
                        included:      {
                          include: [],
                          people:  {
-                           include:          [:id, :included, :attributes, :relationships],
+                           include:          [:id, :attributes, :relationships],
                            attributes:       { include: [] },
                            relationships:    { include: [] },
                            _json_api_parsed: true
@@ -53,19 +53,55 @@ class FieldsetsOptionsTest < Minitest::Spec
                          fields:  { articles: [:title, :body], people: [:email] }
                        },
                        author: :people)
-    options.must_equal(include:  [:id, :included],
+    options.must_equal(include:  [:id, :attributes, :relationships, :included],
                        included: {
                          include:  [:author],
                          articles: {
-                           include:          [:id, :included, :attributes, :relationships],
+                           include:          [:id, :attributes, :relationships],
                            attributes:       { include: [:title, :body] },
                            relationships:    { include: [:title, :body] },
                            _json_api_parsed: true
                          },
                          author:   {
-                           include:          [:id, :included, :attributes, :relationships],
+                           include:          [:id, :attributes, :relationships],
                            attributes:       { include: [:email] },
                            relationships:    { include: [:email] },
+                           _json_api_parsed: true
+                         }
+                       })
+  end
+
+  it 'rewrites a relationship name' do
+    options = Include.({ include: ['comments'] }, {})
+    options.must_equal(include:  [:id, :attributes, :relationships, :included],
+                       included: {
+                         include:  [:comments],
+                         comments: {
+                           include:          [:id, :attributes, :relationships],
+                           _json_api_parsed: true
+                         }
+                       })
+  end
+
+  it 'rewrites a dot-separated path of relationship names' do
+    options = Include.({ include: ['comments.author.employer'] }, {})
+    options.must_equal(include:  [:id, :attributes, :relationships, :included],
+                       included: {
+                         include:  [:comments],
+                         comments: {
+                           include:  [:id, :attributes, :relationships, :included],
+                           included: {
+                             author: {
+                               include:          [:id, :attributes, :relationships, :included],
+                               included:         {
+                                 employer: {
+                                   include:          [:id, :attributes, :relationships],
+                                   _json_api_parsed: true
+                                 }
+                               },
+                               _json_api_parsed: true
+                             }
+                           },
                            _json_api_parsed: true
                          }
                        })

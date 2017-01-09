@@ -4,10 +4,8 @@ require 'json'
 
 class JSONAPIFieldsetsTest < Minitest::Spec
   Article = Struct.new(:id, :title, :summary, :comments, :author)
-  Comment = Struct.new(:id, :body, :good)
+  Comment = Struct.new(:id, :body, :good, :author)
   Author = Struct.new(:id, :name, :email)
-
-  let(:comments) { [Comment.new('c:1', 'Cool!', true), Comment.new('c:2', 'Nah', false)] }
 
   describe 'Single Resource Object With Options' do
     class DocumentSingleResourceObjectDecorator < Roar::Decorator
@@ -26,6 +24,15 @@ class JSONAPIFieldsetsTest < Minitest::Spec
           property :body
           property :good
         end
+
+        has_one :author do
+          type :authors
+
+          attributes do
+            property :name
+            property :email
+          end
+        end
       end
 
       has_one :author do
@@ -38,7 +45,18 @@ class JSONAPIFieldsetsTest < Minitest::Spec
       end
     end
 
-    let(:article) { Article.new(1, 'My Article', 'An interesting read.', comments, Author.new('a:1', 'Celso', 'celsito@trb.to')) }
+    let(:comments) {
+      [
+        Comment.new('c:1', 'Cool!', true,
+                    Author.new('a:2', 'Tim', 'troll@trollblazer.io')),
+        Comment.new('c:2', 'Nah', false)
+      ]
+    }
+
+    let(:article) {
+      Article.new(1, 'My Article', 'An interesting read.', comments,
+                  Author.new('a:1', 'Celso', 'celsito@trb.to'))
+    }
 
     it 'includes scalars' do
       DocumentSingleResourceObjectDecorator.new(article)
@@ -80,6 +98,14 @@ class JSONAPIFieldsetsTest < Minitest::Spec
                 "attributes": {
                   "body": "Cool!",
                   "good": true
+                },
+                "relationships": {
+                  "author": {
+                    "data": {
+                      "type": "authors",
+                      "id": "a:2"
+                    }
+                  }
                 }
               },
               {
@@ -88,6 +114,71 @@ class JSONAPIFieldsetsTest < Minitest::Spec
                 "attributes": {
                   "body": "Nah",
                   "good": false
+                },
+                "relationships": {
+                  "author": {
+                    "data": null
+                  }
+                }
+              }
+            ]
+          }
+        ))
+    end
+
+    it 'includes nested compound objects' do
+      DocumentSingleResourceObjectDecorator.new(article)
+                                           .to_json(
+                                             fields:  { articles: [:title] },
+                                             include: ['comments.author']
+                                           )
+                                           .must_equal_json(%(
+          {
+            "data": {
+              "id": "1",
+              "attributes": {
+                "title": "My Article"
+              },
+              "type": "articles"
+            },
+            "included": [
+              {
+                "type": "comments",
+                "id": "c:1",
+                "attributes": {
+                  "body": "Cool!",
+                  "good": true
+                },
+                "relationships": {
+                  "author": {
+                    "data": {
+                      "type": "authors",
+                      "id": "a:2"
+                    }
+                  }
+                },
+                "included": [
+                  {
+                    "type": "authors",
+                    "id": "a:2",
+                    "attributes": {
+                      "email": "troll@trollblazer.io",
+                      "name": "Tim"
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "comments",
+                "id": "c:2",
+                "attributes": {
+                  "body": "Nah",
+                  "good": false
+                },
+                "relationships": {
+                  "author": {
+                    "data": null
+                  }
                 }
               }
             ]
