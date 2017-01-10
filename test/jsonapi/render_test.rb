@@ -215,6 +215,9 @@ class JsonapiRenderTest < MiniTest::Spec
         property :movement
         collection :noteable_works
       end
+
+      link(:self)           { "http://visual_artists/#{represented.id}" }
+      link(:wikipedia_page) { "https://en.wikipedia.org/wiki/#{represented.name}" }
     end
 
     Painter = Struct.new(:id, :name, :known_aliases, :movement, :noteable_works)
@@ -234,6 +237,10 @@ class JsonapiRenderTest < MiniTest::Spec
               "Kahnweiler",
               "Guernica"
             ]
+          },
+          "links": {
+            "self": "http://visual_artists/p1",
+            "wikipedia-page": "https://en.wikipedia.org/wiki/Pablo Picasso"
           }
         }
       })
@@ -255,6 +262,10 @@ class JsonapiRenderTest < MiniTest::Spec
                 "Kahnweiler",
                 "Guernica"
               ]
+            },
+            "links": {
+              "self": "http://visual_artists/p1",
+              "wikipedia-page": "https://en.wikipedia.org/wiki/Pablo Picasso"
             }
           }
         ]

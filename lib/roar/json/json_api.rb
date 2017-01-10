@@ -55,7 +55,9 @@ module Roar
       module Renderer
         class Links
           def call(res, _options)
-            tuples = (res.delete('links') || []).collect { |link| [link['rel'], link['href']] }
+            tuples = (res.delete('links') || []).collect { |link|
+              [JSONAPI::MemberName.(link['rel'], strict: true), link['href']]
+            }
             # tuples.to_h
             ::Hash[tuples] # TODO: tuples.to_h when dropping < 2.1.
           end
