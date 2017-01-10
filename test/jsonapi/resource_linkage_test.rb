@@ -5,6 +5,24 @@ require 'roar/json/json_api'
 require 'json'
 
 class ResourceLinkageTest < MiniTest::Spec
+  class ChefDecorator < Roar::Decorator
+    include Roar::JSON::JSONAPI
+    type :chefs
+
+    attributes do
+      property :name
+    end
+  end
+
+  class IngredientDecorator < Roar::Decorator
+    include Roar::JSON::JSONAPI
+    type :ingredients
+
+    attributes do
+      property :name
+    end
+  end
+
   class RecipeDecorator < Roar::Decorator
     include Roar::JSON::JSONAPI
     type :recipes
@@ -13,24 +31,19 @@ class ResourceLinkageTest < MiniTest::Spec
       property :name
     end
 
-    has_one :chef do
-      type :chefs
+    has_one   :chef,        decorator: ChefDecorator
+    has_many  :ingredients, decorator: IngredientDecorator
+
+    has_many  :reviews do
+      type :review
 
       attributes do
-        property :name
-      end
-    end
-
-    has_many :ingredients do
-      type :ingredients
-
-      attributes do
-        property :name
+        property :text
       end
     end
   end
 
-  Recipe      = Struct.new(:id, :name, :chef, :ingredients)
+  Recipe      = Struct.new(:id, :name, :chef, :ingredients, :reviews)
   Chef        = Struct.new(:id, :name)
   Ingredient  = Struct.new(:id, :name)
 
