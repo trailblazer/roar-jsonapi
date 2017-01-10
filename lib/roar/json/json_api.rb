@@ -4,16 +4,7 @@ require 'set'
 
 require 'roar/json/json_api/member_name'
 
-module Roar
-  module JSON
-    module JSONAPI
-      DEFAULTS_AS = ->(name, _) {
-        { as: JSONAPI::MemberName.(name) }
-      }
-    end
-  end
-end
-
+require 'roar/json/json_api/defaults'
 require 'roar/json/json_api/meta'
 require 'roar/json/json_api/declarative'
 require 'roar/json/json_api/for_collection'
@@ -27,19 +18,13 @@ module Roar
         base.class_eval do
           feature Roar::JSON
           feature Roar::Hypermedia
-          feature JSONAPI::Meta
+          feature JSONAPI::Defaults, JSONAPI::Meta
           extend JSONAPI::Declarative
           extend JSONAPI::ForCollection
           include JSONAPI::Document
           self.representation_wrap = :data
 
           property :id, render_filter: ->(input, _options) { input.to_s }
-
-          defaults(&DEFAULTS_AS)
-
-          nested :attributes do
-            defaults(&DEFAULTS_AS)
-          end
 
           nested :relationships do
           end
