@@ -42,50 +42,50 @@ class MemberNameTest < MiniTest::Spec
     "\u007E"
   ].freeze
 
-  describe 'non-strict (default)' do
-    it 'permits alphanumeric unicode characters, hyphens, underscores and spaces' do
-      MemberName.('99 Luftballons').must_equal '99 Luftballons'
-      MemberName.('Artist').must_equal 'Artist'
-      MemberName.('Актер').must_equal 'Актер'
-      MemberName.('おまかせ').must_equal 'おまかせ'
-      MemberName.('auf-der-bühne').must_equal 'auf-der-bühne'
-      MemberName.('nouvelle_interprétation').must_equal 'nouvelle_interprétation'
+  describe 'strict (default)' do
+    it 'permits alphanumeric ASCII characters, hyphens' do
+      MemberName.('99 Luftballons').must_equal '99luftballons'
+      MemberName.('Artist').must_equal 'artist'
+      MemberName.('Актер').must_equal ''
+      MemberName.('おまかせ').must_equal ''
+      MemberName.('auf-der-bühne').must_equal 'auf-der-bhne'
+      MemberName.('nouvelle_interprétation').must_equal 'nouvelle-interprtation'
     end
 
     it 'does not permit any reserved characters' do
       MemberName.(UNICODE_RESERVED_CHARACTERS.join).must_equal ''
     end
 
-    it 'does not permit hyphens, underscores or spaces at beginning or end' do
-      MemberName.(' 99 Luftballons ').must_equal '99 Luftballons'
-      MemberName.('-Artist_').must_equal 'Artist'
-      MemberName.('_Актер').must_equal 'Актер'
-      MemberName.(' おまかせ').must_equal 'おまかせ'
-      MemberName.('-auf-der-bühne').must_equal 'auf-der-bühne'
-      MemberName.('nouvelle_interprétation_').must_equal 'nouvelle_interprétation'
-    end
-
-    it 'preserves underscored words' do
-      MemberName.('playtime_report').must_equal 'playtime_report'
+    it 'hyphenates underscored words' do
+      MemberName.('playtime_report').must_equal 'playtime-report'
     end
   end
 
-  describe 'strict' do
-    it 'permits alphanumeric ASCII characters, hyphens' do
-      MemberName.('99 Luftballons', strict: true).must_equal '99luftballons'
-      MemberName.('Artist', strict: true).must_equal 'artist'
-      MemberName.('Актер', strict: true).must_equal ''
-      MemberName.('おまかせ', strict: true).must_equal ''
-      MemberName.('auf-der-bühne', strict: true).must_equal 'auf-der-bhne'
-      MemberName.('nouvelle_interprétation', strict: true).must_equal 'nouvelle-interprtation'
+  describe 'non-strict' do
+    it 'permits alphanumeric unicode characters, hyphens, underscores and spaces' do
+      MemberName.('99 Luftballons', strict: false).must_equal '99 Luftballons'
+      MemberName.('Artist', strict: false).must_equal 'Artist'
+      MemberName.('Актер', strict: false).must_equal 'Актер'
+      MemberName.('おまかせ', strict: false).must_equal 'おまかせ'
+      MemberName.('auf-der-bühne', strict: false).must_equal 'auf-der-bühne'
+      MemberName.('nouvelle_interprétation', strict: false).must_equal 'nouvelle_interprétation'
     end
 
     it 'does not permit any reserved characters' do
-      MemberName.(UNICODE_RESERVED_CHARACTERS.join, strict: true).must_equal ''
+      MemberName.(UNICODE_RESERVED_CHARACTERS.join, strict: false).must_equal ''
     end
 
-    it 'hyphenates underscored words' do
-      MemberName.('playtime_report', strict: true).must_equal 'playtime-report'
+    it 'does not permit hyphens, underscores or spaces at beginning or end' do
+      MemberName.(' 99 Luftballons ', strict: false).must_equal '99 Luftballons'
+      MemberName.('-Artist_', strict: false).must_equal 'Artist'
+      MemberName.('_Актер', strict: false).must_equal 'Актер'
+      MemberName.(' おまかせ', strict: false).must_equal 'おまかせ'
+      MemberName.('-auf-der-bühne', strict: false).must_equal 'auf-der-bühne'
+      MemberName.('nouvelle_interprétation_', strict: false).must_equal 'nouvelle_interprétation'
+    end
+
+    it 'preserves underscored words' do
+      MemberName.('playtime_report', strict: false).must_equal 'playtime_report'
     end
   end
 end

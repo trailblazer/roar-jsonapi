@@ -7,7 +7,7 @@ module Roar
           document  = super(Options::Include.(options, relationship_type_mappings))
           unwrapped = options[:wrap] == false
           resource  = unwrapped ? document : document['data']
-          resource['type'] = JSONAPI::MemberName.(self.class.type, strict: true)
+          resource['type'] = JSONAPI::MemberName.(self.class.type)
 
           links = Renderer::Links.new.(resource, options)
           meta  = render_meta(options)

@@ -8,7 +8,7 @@ module Roar
   module JSON
     module JSONAPI
       DEFAULTS_AS = ->(name, _) {
-        { as: JSONAPI::MemberName.(name, strict: true) }
+        { as: JSONAPI::MemberName.(name) }
       }
     end
   end
@@ -56,7 +56,7 @@ module Roar
         class Links
           def call(res, _options)
             tuples = (res.delete('links') || []).collect { |link|
-              [JSONAPI::MemberName.(link['rel'], strict: true), link['href']]
+              [JSONAPI::MemberName.(link['rel']), link['href']]
             }
             # tuples.to_h
             ::Hash[tuples] # TODO: tuples.to_h when dropping < 2.1.

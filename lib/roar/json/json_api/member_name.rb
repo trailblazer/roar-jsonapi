@@ -12,8 +12,9 @@ module Roar
         end
 
         def call(name, options = {})
-          name = name.to_s
-          if options[:strict]
+          name    = name.to_s
+          strict  = options.fetch(:strict, true)
+          if strict
             name.downcase!
             name.gsub!(STRICT_FILTER_REGEXP, ''.freeze)
           else
@@ -21,7 +22,7 @@ module Roar
           end
           name.gsub!(/\A([-_ ])/, '')
           name.gsub!(/([-_ ])\z/, '')
-          name.tr!('_', '-') if options[:strict]
+          name.tr!('_', '-') if strict
           name
         end
       end
