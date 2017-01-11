@@ -14,6 +14,15 @@ require 'roar/json/json_api/document'
 module Roar
   module JSON
     module JSONAPI
+      # Hook called when module is included
+      #
+      # @param [Class,Module] base
+      #   the module or class including JSONAPI
+      #
+      # @return [undefined]
+      #
+      # @api private
+      # @see http://www.ruby-doc.org/core/Module.html#method-i-included
       def self.included(base)
         base.class_eval do
           feature Roar::JSON
@@ -37,6 +46,7 @@ module Roar
         end
       end
 
+      # @api private
       module Renderer
         class Links
           def call(res, _options)
@@ -49,6 +59,7 @@ module Roar
         end
       end
 
+      # @api private
       module Fragment
         Included = ->(included, options) do
           return unless included && included.any?
@@ -65,6 +76,7 @@ module Roar
       end
     end
 
+    # @api private
     module HashUtils
       def store_if_any(hash, key, value)
         hash[key] = value if value && value.any?

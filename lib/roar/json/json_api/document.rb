@@ -1,7 +1,38 @@
 module Roar
   module JSON
     module JSONAPI
+      # Instance method API for JSON API Documents.
+      #
       module Document
+        # Render the document as JSON
+        #
+        # @option options (see #to_hash)
+        #
+        # @return [String] JSON String
+        #
+        # @see http://jsonapi.org/format/#fetching-includes
+        # @see http://jsonapi.org/format/#fetching-sparse-fieldsets
+        # @api public
+        def to_json(options = {})
+          super
+        end
+
+        # Render the document as a Ruby Hash
+        #
+        # @option options [Boolean,Array<String>] include
+        #   compound documents to include, specified as a list of relationship
+        #   paths or `false`, if no compound documents are to be included.
+        #
+        #   N.B. this syntax and behaviour for this option is different to that
+        #   of the `include` option implemented in non-JSON API Representers.
+        # @option options [Hash{Symbol=>[Array<String>]}] fields
+        #   fields to returned on a per-type basis.
+        # @option options [Hash{Symbol=>Symbol}] user_options
+        #   additional arbitary options to be passed to the Representer.
+        #
+        # @return [Hash{String=>Object}]
+        #
+        # @api public
         # rubocop:disable Metrics/MethodLength
         def to_hash(options = {})
           document  = super(Options::Include.(options, relationship_type_mappings))

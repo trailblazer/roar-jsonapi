@@ -1,9 +1,12 @@
 module Roar
   module JSON
     module JSONAPI
-      # {:include=>[:id, :title, :author, :included],
-      #  :included=>{:include=>[:author], :author=>{:include=>[:email, :id]}}}
+      # @api private
       module Options
+        # Transforms `field:` and `include:`` options to their internal
+        # equivalents.
+        #
+        # @see Document#to_hash
         class Include
           DEFAULT_INTERNAL_INCLUDES = [:id, :attributes, :relationships].freeze
 

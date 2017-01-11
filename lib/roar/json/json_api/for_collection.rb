@@ -1,6 +1,7 @@
 module Roar
   module JSON
     module JSONAPI
+      # @api private
       module ForCollection
         def collection_representer!(_options)
           singular = self # e.g. Song::Representer
