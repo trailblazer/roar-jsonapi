@@ -1,4 +1,4 @@
-# ROAR JSON API
+# Roar JSON API
 
 _Resource-Oriented Architectures in Ruby._
 
@@ -7,13 +7,11 @@ _Resource-Oriented Architectures in Ruby._
 [![Build Status](https://travis-ci.org/trailblazer/roar-jsonapi.svg?branch=master)](https://travis-ci.org/trailblazer/roar-jsonapi)
 [![Gem Version](https://badge.fury.io/rb/roar-jsonapi.svg)](http://badge.fury.io/rb/roar-jsonapi)
 
-## JSON API
-
-Roar also supports [JSON API](http://jsonapi.org/) - yay! It can render _and_ parse singular and collection documents.
+Roar JSON API provides support for [JSON API](http://jsonapi.org/), a specification for building APIs in JSON. It can render _and_ parse singular and collection documents.
 
 ### Resource
 
-A minimal representation can be defined as follows.
+A minimal representation of a Resource can be defined as follows:
 
 ```ruby
 require 'roar/json/json_api'
@@ -22,56 +20,29 @@ class SongsRepresenter < Roar::Decorator
   include Roar::JSON::JSONAPI
   type :songs
 
-  property :title
-end
-```
-
-Properties of the represented model are defined in the root level.
-
-### Hypermedia
-
-You can add links to `linked` models within the resource section.
-
-```ruby
-class SongsRepresenter < Roar::Decorator
-  # ...
-
-  has_one :composer
-  has_many :listeners
-end
-```
-
-Global `links` can be added using the familiar `::link` method (this is still WIP as the DSL is not final).
-
-```ruby
-class SongsRepresenter < Roar::Decorator
-  # ...
-
-  link "songs.album" do
-    {
-      type: "album",
-      href: "http://example.com/albums/{songs.album}"
-    }
+  attributes do
+    property :title
   end
 end
 ```
 
-### Compounds
+Properties (or attributes) of the represented model are defined within an
+`attributes` block.
 
-To add compound models into the document, use `::compound`.
+An `id` property will automatically defined when using Roar JSON API.
+
+### Relationships
+
+To define relationships, use `::has_one` or `::has_many` with either an inline
+or a standalone representer (specified with the `extend:` or `decorates:` option).
 
 ```ruby
 class SongsRepresenter < Roar::Decorator
-  # ...
-
-compound do
-  property :album do
+  has_one :album do
     property :title
   end
 
-  collection :musicians do
-    property :name
-  end
+  has_many :musicians, extend: MusicianRepresenter
 end
 ```
 
@@ -98,7 +69,7 @@ collection.page  #=> 1
 collection.total #=> 12
 ```
 
-This will render the `{"meta": {"page": 1, "total": 12}}` hash into the JSON-API document.
+This will render the `{"meta": {"page": 1, "total": 12}}` hash into the JSON API document.
 
 Alternatively, you can provide meta information as a hash when rendering.  Any values also defined on your object will be overriden.
 
@@ -127,7 +98,7 @@ If you need more functionality (and parsing), please let us know.
 
 ### Usage
 
-As JSON-API per definition can represent singular models and collections you have two entry points.
+As JSON API per definition can represent singular models and collections you have two entry points.
 
 ```ruby
 SongsRepresenter.prepare(Song.find(1)).to_json
