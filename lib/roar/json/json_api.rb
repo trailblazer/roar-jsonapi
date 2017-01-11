@@ -53,8 +53,8 @@ module Roar
             tuples = (res.delete('links') || []).collect { |link|
               [JSONAPI::MemberName.(link['rel']), link['href']]
             }
-            # tuples.to_h
-            ::Hash[tuples] # TODO: tuples.to_h when dropping < 2.1.
+
+            ::Hash[tuples] # NOTE: change to tuples.to_h when dropping < 2.1.
           end
         end
       end
