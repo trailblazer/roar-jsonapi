@@ -27,6 +27,9 @@ Style/LambdaCall:
 Metrics/LineLength:
   Enabled: false
 
+Metrics/MethodLength:
+  Max: 15
+
 Style/PredicateName:
   NameWhitelist:
     - is_a?

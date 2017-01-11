@@ -33,7 +33,6 @@ module Roar
         # @return [Hash{String=>Object}]
         #
         # @api public
-        # rubocop:disable Metrics/MethodLength
         def to_hash(options = {})
           document  = super(Options::Include.(options, relationship_type_mappings))
           unwrapped = options[:wrap] == false
@@ -57,7 +56,6 @@ module Roar
 
           document
         end
-        # rubocop:enable Metrics/MethodLength
 
         private
 
