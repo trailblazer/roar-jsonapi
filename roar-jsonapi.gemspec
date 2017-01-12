@@ -7,9 +7,9 @@ Gem::Specification.new do |s|
   s.platform    = Gem::Platform::RUBY
   s.authors     = ['Nick Sutterer', 'Alex Coles']
   s.email       = ['apotonick@gmail.com', 'alex@alexbcoles.com']
-  s.homepage    = 'http://trailblazer.to/gems/roar'
-  s.summary     = 'Parse and render REST API documents using representers.'
-  s.description = 'Object-oriented representers help you defining nested REST API documents which can then be rendered and parsed using one and the same concept.'
+  s.homepage    = 'http://trailblazer.to/gems/roar/jsonapi.html'
+  s.summary     = 'Parse and render JSON API documents using representers.'
+  s.description = 'Object-oriented representers help you define nested JSON API documents which can then be rendered and parsed using one and the same concept.'
   s.license     = 'MIT'
 
   s.files         = `git ls-files`.split("\n")
