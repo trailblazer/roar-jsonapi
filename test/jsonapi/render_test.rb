@@ -149,7 +149,7 @@ class JsonapiRenderTest < MiniTest::Spec
   end
 
   it 'renders additional meta information if meta option supplied' do
-    hash = decorator.to_hash('meta' => {
+    hash = decorator.to_hash(meta: {
                                'copyright' => 'Nick Sutterer', 'reviewers' => []
                              })
     hash['meta']['copyright'].must_equal('Nick Sutterer')
@@ -158,7 +158,7 @@ class JsonapiRenderTest < MiniTest::Spec
   end
 
   it 'does not render additonal meta information if meta option is empty' do
-    hash = decorator.to_hash('meta' => {})
+    hash = decorator.to_hash(meta: {})
     hash['meta']['copyright'].must_be_nil
     hash['meta']['reviewers'].must_equal(['Christian Bernstein'])
     hash['meta']['reviewer-initials'].must_equal('C.B.')

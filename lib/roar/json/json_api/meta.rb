@@ -47,7 +47,7 @@ module Roar
         def render_meta(options)
           representer = representable_attrs[:meta_representer]
           meta        = representer ? representer.new(represented).to_hash : {}
-          meta.merge!(options['meta']) if options['meta']
+          meta.merge!(options[:meta]) if options[:meta]
           meta
         end
       end
