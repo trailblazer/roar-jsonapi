@@ -16,7 +16,7 @@ module Roar
         #
         #   representer.to_json(
         #     include: query['include'],
-        #     fields:  query['fields'].symbolize_keys
+        #     fields:  query['fields']
         #   )
         #
         # @option options (see #to_hash)
@@ -77,9 +77,9 @@ module Roar
         def relationship_type_mappings
           @relationship_type_mappings ||= begin
             mappings = included_definitions.each_with_object({}) do |definition, hash|
-              hash[definition.name.to_sym] = definition.representer_module.type.to_sym
+              hash[definition.name] = definition.representer_module.type
             end
-            mappings[:_self] = self.class.type.to_sym
+            mappings['_self'] = self.class.type
             mappings
           end
         end

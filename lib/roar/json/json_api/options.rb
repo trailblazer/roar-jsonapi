@@ -41,7 +41,7 @@ module Roar
           def rewrite_fields!(options, fields, mappings)
             (fields || {}).each do |type, raw_value|
               fields_value      = parse_fields_value(raw_value)
-              relationship_name = mappings.key(type) || type
+              relationship_name = (mappings.key(type.to_s) || type).to_sym
               if relationship_name == :_self
                 options[:attributes]     = { include: fields_value }
                 options[:relationships]  = { include: fields_value }

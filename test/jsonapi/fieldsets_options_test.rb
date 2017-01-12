@@ -11,8 +11,8 @@ class FieldsetsOptionsTest < Minitest::Spec
        { include: ['articles'],
          fields:  { articles: ['title,body'],   people: [] } },
        { include: 'articles',
-         fields:  { articles: 'title,body',     people: '' } }].each do |options|
-        options = Include.(options, articles: :articles)
+         fields:  { 'articles' => 'title,body', 'people' => '' } }].each do |options|
+        options = Include.(options, 'articles' => 'articles')
         options.must_equal(include:  [:id, :attributes, :relationships, :included],
                            included: {
                              include:  [:articles],
@@ -48,8 +48,8 @@ class FieldsetsOptionsTest < Minitest::Spec
     it 'parses :fields (_self), but does not include other resources' do
       [{ include: [],   fields:  { articles: [:title, :body], people: [] } },
        { include: [''], fields:  { articles: ['title,body'],  people: [] } },
-       { include: '',   fields:  { articles: 'title,body',    people: '' } }].each do |options|
-        options = Include.(options, _self: :articles)
+       { include: '',   fields:  { 'articles' => 'title,body', 'people' => '' } }].each do |options|
+        options = Include.(options, '_self' => 'articles')
         options.must_equal(include:       [:id, :attributes, :relationships, :included],
                            included:      {
                              include: [],
@@ -67,8 +67,8 @@ class FieldsetsOptionsTest < Minitest::Spec
     it 'parses :fields, but does not include other resources' do
       [{ include: [],   fields:  { articles: [:title, :body], people: [:email] } },
        { include: [''], fields:  { articles: ['title,body'],  people: ['email'] } },
-       { include: '',   fields:  { articles: 'title,body',    people: 'email' } }].each do |options|
-        options = Include.(options, author: :people, articles: :articles)
+       { include: '',   fields:  { 'articles' => 'title,body', 'people' => 'email' } }].each do |options|
+        options = Include.(options, 'author' => 'people', 'articles' => 'articles')
         options.must_equal(include:  [:id, :attributes, :relationships, :included],
                            included: {
                              include:  [],
