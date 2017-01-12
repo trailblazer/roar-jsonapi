@@ -6,115 +6,130 @@ class FieldsetsOptionsTest < Minitest::Spec
 
   describe 'with non-empty :include and non-empty :fields option' do
     it 'rewrites :include and parses :fields' do
-      options = Include.({
-                           include: [:articles],
-                           fields:  { articles: [:title, :body], people: [] }
-                         },
-                         articles: :articles)
-      options.must_equal(include:  [:id, :attributes, :relationships, :included],
-                         included: {
-                           include:  [:articles],
-                           articles: {
-                             include:          [:id, :attributes, :relationships],
-                             attributes:       { include: [:title, :body] },
-                             relationships:    { include: [:title, :body] },
-                             _json_api_parsed: true
-                           },
-                           people:   {
-                             attributes:       { include: [] },
-                             relationships:    { include: [] },
-                             _json_api_parsed: true
-                           }
-                         })
+      [{ include: [:articles],
+         fields:  { articles: [:title, :body],  people: [] } },
+       { include: ['articles'],
+         fields:  { articles: ['title,body'],   people: [] } },
+       { include: 'articles',
+         fields:  { articles: 'title,body',     people: '' } }].each do |options|
+        options = Include.(options, articles: :articles)
+        options.must_equal(include:  [:id, :attributes, :relationships, :included],
+                           included: {
+                             include:  [:articles],
+                             articles: {
+                               include:          [:id, :attributes, :relationships],
+                               attributes:       { include: [:title, :body] },
+                               relationships:    { include: [:title, :body] },
+                               _json_api_parsed: true
+                             },
+                             people:   {
+                               attributes:       { include: [] },
+                               relationships:    { include: [] },
+                               _json_api_parsed: true
+                             }
+                           })
+      end
     end
   end
 
   describe 'with empty :include option' do
     it 'rewrites :include' do
-      options = Include.({ include: [] }, {})
-      options.must_equal(include:  [:id, :attributes, :relationships, :included],
-                         included: { include: [] })
+      [{ include: [] },
+       { include: [''] },
+       { include: '' }].each do |options|
+        options = Include.(options, {})
+        options.must_equal(include:  [:id, :attributes, :relationships, :included],
+                           included: { include: [] })
+      end
     end
   end
 
   describe 'with empty :include option and non-empty :fields option' do
     it 'parses :fields (_self), but does not include other resources' do
-      options = Include.({
-                           include: [],
-                           fields:  { articles: [:title, :body], people: [] }
-                         },
-                         _self: :articles)
-      options.must_equal(include:       [:id, :attributes, :relationships, :included],
-                         included:      {
-                           include: [],
-                           people:  {
-                             attributes:       { include: [] },
-                             relationships:    { include: [] },
-                             _json_api_parsed: true
-                           }
-                         },
-                         attributes:    { include: [:title, :body] },
-                         relationships: { include: [:title, :body] })
+      [{ include: [],   fields:  { articles: [:title, :body], people: [] } },
+       { include: [''], fields:  { articles: ['title,body'],  people: [] } },
+       { include: '',   fields:  { articles: 'title,body',    people: '' } }].each do |options|
+        options = Include.(options, _self: :articles)
+        options.must_equal(include:       [:id, :attributes, :relationships, :included],
+                           included:      {
+                             include: [],
+                             people:  {
+                               attributes:       { include: [] },
+                               relationships:    { include: [] },
+                               _json_api_parsed: true
+                             }
+                           },
+                           attributes:    { include: [:title, :body] },
+                           relationships: { include: [:title, :body] })
+      end
     end
 
     it 'parses :fields, but does not include other resources' do
-      options = Include.({
-                           include: [],
-                           fields:  { articles: [:title, :body], people: [:email] }
-                         },
-                         author: :people, articles: :articles)
-      options.must_equal(include:  [:id, :attributes, :relationships, :included],
-                         included: {
-                           include:  [],
-                           articles: {
-                             attributes:       { include: [:title, :body] },
-                             relationships:    { include: [:title, :body] },
-                             _json_api_parsed: true
-                           },
-                           author:   {
-                             attributes:       { include: [:email] },
-                             relationships:    { include: [:email] },
-                             _json_api_parsed: true
-                           }
-                         })
+      [{ include: [],   fields:  { articles: [:title, :body], people: [:email] } },
+       { include: [''], fields:  { articles: ['title,body'],  people: ['email'] } },
+       { include: '',   fields:  { articles: 'title,body',    people: 'email' } }].each do |options|
+        options = Include.(options, author: :people, articles: :articles)
+        options.must_equal(include:  [:id, :attributes, :relationships, :included],
+                           included: {
+                             include:  [],
+                             articles: {
+                               attributes:       { include: [:title, :body] },
+                               relationships:    { include: [:title, :body] },
+                               _json_api_parsed: true
+                             },
+                             author:   {
+                               attributes:       { include: [:email] },
+                               relationships:    { include: [:email] },
+                               _json_api_parsed: true
+                             }
+                           })
+      end
     end
   end
 
   describe 'with non-empty :include option' do
     it 'rewrites :include given a relationship name' do
-      options = Include.({ include: ['comments'] }, {})
-      options.must_equal(include:  [:id, :attributes, :relationships, :included],
-                         included: {
-                           include:  [:comments],
-                           comments: {
-                             include:          [:id, :attributes, :relationships],
-                             _json_api_parsed: true
-                           }
-                         })
+      [{ include: [:comments] },
+       { include: ['comments'] },
+       { include: 'comments' }].each do |options|
+        options = Include.(options, {})
+        options.must_equal(include:  [:id, :attributes, :relationships, :included],
+                           included: {
+                             include:  [:comments],
+                             comments: {
+                               include:          [:id, :attributes, :relationships],
+                               _json_api_parsed: true
+                             }
+                           })
+      end
     end
 
     it 'rewrites :include given a dot-separated path of relationship names' do
-      options = Include.({ include: ['comments.author.employer'] }, {})
-      options.must_equal(include:  [:id, :attributes, :relationships, :included],
-                         included: {
-                           include:  [:comments],
-                           comments: {
-                             include:          [:id, :attributes, :relationships, :included],
-                             included:         {
-                               author: {
-                                 include:          [:id, :attributes, :relationships, :included],
-                                 included:         {
-                                   employer: {
-                                     include:          [:id, :attributes, :relationships],
-                                     _json_api_parsed: true
-                                   }
-                                 },
-                                 _json_api_parsed: true
-                               }
-                             },
-                             _json_api_parsed: true
-                           }
-                         })
+      [{ include: [:"comments.author.employer"] },
+       { include: ['comments.author.employer'] },
+       { include: 'comments.author.employer' }].each do |options|
+        options = Include.(options, {})
+        options.must_equal(include:  [:id, :attributes, :relationships, :included],
+                           included: {
+                             include:  [:comments],
+                             comments: {
+                               include:          [:id, :attributes, :relationships, :included],
+                               included:         {
+                                 author: {
+                                   include:          [:id, :attributes, :relationships, :included],
+                                   included:         {
+                                     employer: {
+                                       include:          [:id, :attributes, :relationships],
+                                       _json_api_parsed: true
+                                     }
+                                   },
+                                   _json_api_parsed: true
+                                 }
+                               },
+                               _json_api_parsed: true
+                             }
+                           })
+      end
     end
 
     it 'does not rewrite :include if _json_api_parsed: true' do

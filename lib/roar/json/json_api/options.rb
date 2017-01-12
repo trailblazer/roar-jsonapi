@@ -29,10 +29,7 @@ module Roar
           private
 
           def rewrite_include_option!(options, include)
-            include_paths = (include || []).map { |path|
-              path.to_s.split('.').map(&:to_sym)
-            }
-
+            include_paths      = parse_include_option(include)
             options[:include]  = DEFAULT_INTERNAL_INCLUDES + [:included]
             options[:included] = { include: include_paths.map(&:first) - [:_self] }
             include_paths.each do |include_path|
@@ -42,20 +39,31 @@ module Roar
           end
 
           def rewrite_fields!(options, fields, mappings)
-            (fields || []).each do |type, value|
+            (fields || {}).each do |type, raw_value|
+              fields_value      = parse_fields_value(raw_value)
               relationship_name = mappings.key(type) || type
               if relationship_name == :_self
-                options[:attributes]     = { include: value }
-                options[:relationships]  = { include: value }
+                options[:attributes]     = { include: fields_value }
+                options[:relationships]  = { include: fields_value }
               else
                 options[:included][relationship_name] ||= {}
                 options[:included][relationship_name].merge!(
-                  attributes:       { include: value },
-                  relationships:    { include: value },
+                  attributes:       { include: fields_value },
+                  relationships:    { include: fields_value },
                   _json_api_parsed: true # flag to halt recursive parsing
                 )
               end
             end
+          end
+
+          def parse_include_option(include_value)
+            Array(include_value).flat_map { |i| i.to_s.split(',') }.map { |path|
+              path.split('.').map(&:to_sym)
+            }
+          end
+
+          def parse_fields_value(fields_value)
+            Array(fields_value).flat_map { |v| v.to_s.split(',') }.map(&:to_sym)
           end
 
           def explode_include_path(*include_path)
