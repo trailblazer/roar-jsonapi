@@ -32,7 +32,7 @@ module Roar
 
         # Render the document as a Ruby Hash
         #
-        # @option options [Array<#to_s>,#to_s,Boolean] include
+        # @option options [Array<#to_s>,#to_s,false] include
         #   compound documents to include, specified as a list of relationship
         #   paths (Array or comma-separated String) or `false`, if no compound
         #   documents are to be included.
