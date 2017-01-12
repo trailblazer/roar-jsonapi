@@ -76,7 +76,7 @@ This will render the `{"meta": {"page": 1, "total": 12}}` hash into the JSON API
 Alternatively, you can provide meta information as a hash when rendering.  Any values also defined on your object will be overriden.
 
 ```ruby
-collection.to_json("meta" => {page: params["page"], total: collection.size})
+collection.to_json(meta: {page: params["page"], total: collection.size})
 ```
 
 Both methods work for singular documents too.
@@ -93,7 +93,7 @@ end
 ```
 
 ```ruby
-song.to_json("meta" => { label: 'EMI' })
+song.to_json(meta: { label: 'EMI' })
 ```
 
 If you need more functionality (and parsing), please let us know.
