@@ -135,7 +135,10 @@ module Roar
         def has_relationship(name, options = {}, &block)
           resource_decorator = options[:decorator] || options[:extends] ||
                                Class.new(Roar::Decorator).tap { |decorator|
-                                 decorator.send(:include, Roar::JSON::JSONAPI)
+                                 decorator.send(:include, JSONAPI::Resource.new(
+                                                            name,
+                                                            id_key: options.fetch(:id_key, :id)
+                                 ))
                                }
           resource_decorator.instance_exec(&block) if block
 

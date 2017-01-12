@@ -14,33 +14,102 @@ require 'roar/json/json_api/document'
 module Roar
   module JSON
     module JSONAPI
-      # Hook called when module is included
+      # Include to define a JSON API Resource and make API methods available to
+      # your `Roar::Decorator`.
       #
-      # @param [Class,Module] base
-      #   the module or class including JSONAPI
+      # @api public
+      class Resource < Module
+        # @param [Symbol, String] type type name of this resource.
+        # @option options [Symbol] :id_key custom ID key for this resource.
+        def initialize(type, options = {})
+          @type   = type
+          @id_key = options.fetch(:id_key, :id)
+        end
+
+        private
+
+        # Hook called when module is included
+        #
+        # @param [Class,Module] base
+        #   the module or class including JSONAPI
+        #
+        # @return [undefined]
+        #
+        # @api private
+        # @see http://www.ruby-doc.org/core/Module.html#method-i-included
+        def included(base)
+          base.send(:include, JSONAPI::Mixin)
+          base.type(@type)
+          base.property(@id_key, as: :id, render_filter: ->(input, _opts) {
+                                                           input.to_s
+                                                         })
+        end
+      end
+
+      # Include to define a JSON API Resource and make API methods available to
+      # your `Roar::Decorator`.
       #
-      # @return [undefined]
+      # @example Basic Usage
+      #   class SongsRepresenter < Roar::Decorator
+      #     include Roar::JSON::JSONAPI.resource :songs
+      #   end
       #
-      # @api private
-      # @see http://www.ruby-doc.org/core/Module.html#method-i-included
-      def self.included(base)
-        base.class_eval do
-          feature Roar::JSON
-          feature Roar::Hypermedia
-          feature JSONAPI::Defaults, JSONAPI::Meta
-          extend JSONAPI::Declarative
-          extend JSONAPI::ForCollection
-          include JSONAPI::Document
-          self.representation_wrap = :data
+      # @example Custom ID key
+      #   class SongsRepresenter < Roar::Decorator
+      #     include Roar::JSON::JSONAPI.resource :songs, id_key: :song_id
+      #   end
+      #
+      # @param (see Resource.initialize)
+      # @option options (see Resource.initialize)
+      #
+      # @see Mixin
+      # @api public
+      def self.resource(type, options = {})
+        Resource.new(type, options)
+      end
 
-          property :id, render_filter: ->(input, _options) { input.to_s }
+      # Include to make API methods available to your `Roar::Decorator`.
+      #
+      # Unlike {Resource}, you must define a `type` (by calling
+      # {Declarative#type}) and `id` property separately.
+      #
+      # @example Basic Usage
+      #   class SongsRepresenter < Roar::Decorator
+      #     include Roar::JSON::JSONAPI::Mixin
+      #
+      #     type :songs
+      #     property :id
+      #   end
+      #
+      # @see Resource
+      # @api semi-public
+      module Mixin
+        # Hook called when module is included
+        #
+        # @param [Class,Module] base
+        #   the module or class including JSONAPI
+        #
+        # @return [undefined]
+        #
+        # @api private
+        # @see http://www.ruby-doc.org/core/Module.html#method-i-included
+        def self.included(base)
+          base.class_eval do
+            feature Roar::JSON
+            feature Roar::Hypermedia
+            feature JSONAPI::Defaults, JSONAPI::Meta
+            extend JSONAPI::Declarative
+            extend JSONAPI::ForCollection
+            include JSONAPI::Document
+            self.representation_wrap = :data
 
-          nested :relationships do
-          end
+            nested :relationships do
+            end
 
-          nested :included do
-            def to_hash(*)
-              super.flat_map { |_, resource| resource }
+            nested :included do
+              def to_hash(*)
+                super.flat_map { |_, resource| resource }
+              end
             end
           end
         end

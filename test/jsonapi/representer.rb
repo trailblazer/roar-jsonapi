@@ -11,15 +11,14 @@ Article = Struct.new(:id, :title, :author, :editor, :comments) do
   end
 end
 
-Comment = Struct.new(:id, :body) do
+Comment = Struct.new(:comment_id, :body) do
   def self.find_by(_options)
     new
   end
 end
 
 class AuthorDecorator < Roar::Decorator
-  include Roar::JSON::JSONAPI
-  type :authors
+  include Roar::JSON::JSONAPI.resource :authors
 
   attributes do
     property :email
@@ -29,19 +28,17 @@ class AuthorDecorator < Roar::Decorator
 end
 
 class CommentDecorator < Roar::Decorator
-  include Roar::JSON::JSONAPI
-  type :comments
+  include Roar::JSON::JSONAPI.resource(:comments, id_key: :comment_id)
 
   attributes do
     property :body
   end
 
-  link(:self) { "http://comments/#{represented.id}" }
+  link(:self) { "http://comments/#{represented.comment_id}" }
 end
 
 class ArticleDecorator < Roar::Decorator
-  include Roar::JSON::JSONAPI
-  type :articles
+  include Roar::JSON::JSONAPI.resource :articles
 
   # top-level link.
   link :self, toplevel: true do |options|

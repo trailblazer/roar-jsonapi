@@ -12,7 +12,7 @@ class FieldsetsOptionsTest < Minitest::Spec
          fields:  { articles: ['title,body'],   people: [] } },
        { include: 'articles',
          fields:  { 'articles' => 'title,body', 'people' => '' } }].each do |options|
-        options = Include.(options, 'articles' => 'articles')
+        options = Include.(options, relationships: { 'articles' => 'articles' })
         options.must_equal(include:  [:id, :attributes, :relationships, :included],
                            included: {
                              include:  [:articles],
@@ -49,7 +49,7 @@ class FieldsetsOptionsTest < Minitest::Spec
       [{ include: [],   fields:  { articles: [:title, :body], people: [] } },
        { include: [''], fields:  { articles: ['title,body'],  people: [] } },
        { include: '',   fields:  { 'articles' => 'title,body', 'people' => '' } }].each do |options|
-        options = Include.(options, '_self' => 'articles')
+        options = Include.(options, relationships: { '_self' => 'articles' })
         options.must_equal(include:       [:id, :attributes, :relationships, :included],
                            included:      {
                              include: [],
@@ -68,7 +68,7 @@ class FieldsetsOptionsTest < Minitest::Spec
       [{ include: [],   fields:  { articles: [:title, :body], people: [:email] } },
        { include: [''], fields:  { articles: ['title,body'],  people: ['email'] } },
        { include: '',   fields:  { 'articles' => 'title,body', 'people' => 'email' } }].each do |options|
-        options = Include.(options, 'author' => 'people', 'articles' => 'articles')
+        options = Include.(options, relationships: { 'author' => 'people', 'articles' => 'articles' })
         options.must_equal(include:  [:id, :attributes, :relationships, :included],
                            included: {
                              include:  [],
