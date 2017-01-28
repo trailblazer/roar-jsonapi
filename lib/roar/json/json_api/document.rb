@@ -88,7 +88,7 @@ module Roar
 
         def find_id_mapping
           self.class.definitions.detect { |definition|
-            definition[:as] && definition[:as].evaluate(:value) == 'id'
+            definition[:as] && definition[:as].(:value) == 'id'
           }.name
         end
 
