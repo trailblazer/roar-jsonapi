@@ -7,9 +7,12 @@ require 'roar/json/json_api/member_name'
 require 'roar/json/json_api/defaults'
 require 'roar/json/json_api/meta'
 require 'roar/json/json_api/declarative'
-require 'roar/json/json_api/for_collection'
 require 'roar/json/json_api/options'
 require 'roar/json/json_api/document'
+
+require 'roar/json/json_api/single_resource'
+require 'roar/json/json_api/resource_collection'
+require 'roar/json/json_api/for_collection'
 
 module Roar
   module JSON
@@ -101,6 +104,7 @@ module Roar
             extend JSONAPI::Declarative
             extend JSONAPI::ForCollection
             include JSONAPI::Document
+            include JSONAPI::SingleResource
             self.representation_wrap = :data
 
             nested :relationships do

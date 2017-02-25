@@ -6,7 +6,7 @@ module Roar
         # Transforms `field:` and `include:`` options to their internal
         # equivalents.
         #
-        # @see Document#to_hash
+        # @see SingleResource#to_hash
         class Include
           DEFAULT_INTERNAL_INCLUDES = [:attributes, :relationships].freeze
 
