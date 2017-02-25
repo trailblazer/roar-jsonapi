@@ -9,7 +9,7 @@ module Roar
         # @example Simple rendering
         #   representer.to_json
         #
-        # @example Rendering with compount documents and sparse fieldsets
+        # @example Rendering with compound documents and sparse fieldsets
         #   uri   = Addressable::URI.parse('/articles/1?include=author,comments.author')
         #   query = Rack::Utils.parse_nested_query(uri.query)
         #   # => {"include"=>"author", "fields"=>{"articles"=>"title,body", "people"=>"name"}}
