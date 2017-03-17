@@ -43,7 +43,7 @@ module Roar
         # @option options [Hash{Symbol=>[Array<String>]}] fields
         #   fields to returned on a per-type basis.
         # @option options [Hash{#to_s}=>Object] meta
-        #   additional meta information to be rendered in the document.
+        #   extra toplevel meta information to be rendered in the document.
         # @option options [Hash{Symbol=>Symbol}] user_options
         #   additional arbitary options to be passed to the Representer.
         #

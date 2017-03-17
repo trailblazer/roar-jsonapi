@@ -7,7 +7,8 @@ module Roar
       module ResourceCollection
         # @see Document#to_hash
         def to_hash(options = {})
-          document = super(to_a: options, user_options: options[:user_options]) # [{data: {..}, data: {..}}]
+          single_options  = options.reject { |key, _| [:meta, :user_options].include?(key) }
+          document        = super(to_a: single_options, user_options: options[:user_options]) # [{data: {..}, data: {..}}]
 
           links = Renderer::Links.new.(document, options)
           meta  = render_meta(options)
