@@ -367,12 +367,18 @@ class JsonapiCollectionRenderTest < MiniTest::Spec
     hash['links'].must_equal('self' => '//articles?page=2&per_page=10')
   end
 
-  it 'renders additional meta information if meta option supplied' do
+  it 'renders extra toplevel meta information if meta option supplied' do
     hash = decorator.to_hash(meta: { page: 2, total: 9 })
     hash['meta'].must_equal('count' => 3, page: 2, total: 9)
   end
 
-  it 'does not render additional meta information if meta option is empty' do
+  it 'does not render extra meta information on resource objects' do
+    hash = decorator.to_hash(meta: { page: 2, total: 9 })
+    refute hash['data'].first['meta'].key?(:page)
+    refute hash['data'].first['meta'].key?(:total)
+  end
+
+  it 'does not render extra toplevel meta information if meta option is empty' do
     hash = decorator.to_hash(meta: {})
     hash['meta'][:page].must_be_nil
     hash['meta'][:total].must_be_nil
