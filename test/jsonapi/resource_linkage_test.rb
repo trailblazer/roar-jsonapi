@@ -28,8 +28,8 @@ class ResourceLinkageTest < MiniTest::Spec
       property :name
     end
 
-    has_one   :chef,        decorator: ChefDecorator
-    has_many  :ingredients, decorator: IngredientDecorator
+    has_one   :chef,        extend: ChefDecorator
+    has_many  :ingredients, extend: IngredientDecorator
 
     has_many  :reviews do
       type :review

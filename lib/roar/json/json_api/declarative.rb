@@ -133,7 +133,8 @@ module Roar
         private
 
         def has_relationship(name, options = {}, &block)
-          resource_decorator = options[:decorator] || options[:extends] ||
+          resource_decorator = options.delete(:decorator) ||
+                               options.delete(:extend)    ||
                                Class.new(Roar::Decorator).tap { |decorator|
                                  decorator.send(:include, JSONAPI::Resource.new(
                                                             name,
