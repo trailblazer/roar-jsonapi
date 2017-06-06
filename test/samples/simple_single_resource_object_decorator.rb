@@ -1,5 +1,5 @@
-class SimpleSingleResourceObjectDecorator < Representable::Decorator
-  include Representable::JSON
+class SimpleSingleResourceObjectDecorator < Roar::Decorator
+  include Roar::JSON
 
   property :title
 end
