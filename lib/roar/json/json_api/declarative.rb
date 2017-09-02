@@ -157,7 +157,7 @@ module Roar
           end
 
           nested(:relationships, inherit: true) do
-            nested(:"#{name}_relationship", as: MemberName.(name)) do
+            nested(:"#{name}_relationship", as: options[:as] || MemberName.(name)) do
               property name, options.merge(as:           :data,
                                            getter:       ->(opts) {
                                              object = opts[:binding].send(:exec_context, opts)
