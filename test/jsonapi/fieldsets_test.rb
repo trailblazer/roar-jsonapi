@@ -290,4 +290,172 @@ class JSONAPIFieldsetsTest < Minitest::Spec
                                                            ).must_equal_json document
     end
   end
+
+  describe 'Document with given id_key and nested resources with default id_key' do
+    class DocumentResourceWithDifferentIdAtRoot < Roar::Decorator
+      include Roar::JSON::JSONAPI.resource :articles, id_key: :article_id
+
+      attributes do
+        property :title
+        property :summary
+      end
+
+      has_many(:comments) do
+        attributes do
+          property :body
+          property :good
+        end
+      end
+    end
+
+    let(:comments) {
+      [
+        Comment.new('c:1', 'Cool!', true,
+                    Author.new('a:2', 'Tim', 'troll@trollblazer.io')),
+        Comment.new('c:2', 'Nah', false)
+      ]
+    }
+
+    let(:article) {
+      klass = Struct.new(:article_id, :title, :summary, :comments, :author)
+      klass.new(1, 'My Article', 'An interesting read.', comments,
+                  Author.new('a:1', 'Celso', 'celsito@trb.to'))
+    }
+
+    let(:document) {
+      %({
+        "data": {
+          "id": "1",
+          "attributes": {
+            "summary": "An interesting read.",
+            "title": "My Article"
+          },
+          "type": "articles",
+          "relationships": {
+            "comments": {
+              "data": [
+                {
+                  "id": "c:1",
+                  "type": "comments"
+                },
+                {
+                  "id": "c:2",
+                  "type": "comments"
+                }
+              ]
+            }
+          }
+        },
+        "included": [
+          {
+            "type": "comments",
+            "id": "c:1",
+            "attributes": {
+              "body": "Cool!",
+              "good": true
+            }
+          },
+          {
+            "type": "comments",
+            "id": "c:2",
+            "attributes": {
+              "body": "Nah",
+              "good": false
+            }
+          }
+        ]
+      })
+    }
+
+    it do
+      DocumentResourceWithDifferentIdAtRoot.new(article).to_json(include: 'comments')
+                                           .must_equal_json document
+    end
+  end
+
+  describe 'Document with default id_key and nested resources with given id_key' do
+    class CommentDecorator < Roar::Decorator
+      include Roar::JSON::JSONAPI.resource :comments, id_key: :comment_id
+
+      attributes do
+        property :body
+        property :good
+      end
+    end
+
+    class DocumentResourceWithDifferentIdAtRelation < Roar::Decorator
+      include Roar::JSON::JSONAPI.resource :articles
+
+      attributes do
+        property :title
+        property :summary
+      end
+
+      has_many :comments, decorator: CommentDecorator
+    end
+
+    let(:comments) {
+      klass = Struct.new(:comment_id, :body, :good, :comment_author)
+      [
+        klass.new('c:1', 'Cool!', true,
+                  Author.new('a:2', 'Tim', 'troll@trollblazer.io')),
+        klass.new('c:2', 'Nah', false)
+      ]
+    }
+
+    let(:article) {
+      Article.new(1, 'My Article', 'An interesting read.', comments,
+                  Author.new('a:1', 'Celso', 'celsito@trb.to'))
+    }
+
+    let(:document) {
+      %({
+        "data": {
+          "id": "1",
+          "attributes": {
+            "summary": "An interesting read.",
+            "title": "My Article"
+          },
+          "type": "articles",
+          "relationships": {
+            "comments": {
+              "data": [
+                {
+                  "id": "c:1",
+                  "type": "comments"
+                },
+                {
+                  "id": "c:2",
+                  "type": "comments"
+                }
+              ]
+            }
+          }
+        },
+        "included": [
+          {
+            "type": "comments",
+            "id": "c:1",
+            "attributes": {
+              "body": "Cool!",
+              "good": true
+            }
+          },
+          {
+            "type": "comments",
+            "id": "c:2",
+            "attributes": {
+              "body": "Nah",
+              "good": false
+            }
+          }
+        ]
+      })
+    }
+
+    it do
+      DocumentResourceWithDifferentIdAtRelation.new(article).to_json(include: 'comments')
+                                               .must_equal_json document
+    end
+  end
 end

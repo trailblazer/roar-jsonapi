@@ -35,17 +35,26 @@ module Roar
         def mappings
           @mappings ||= begin
             mappings = {}
-            mappings[:id]             = find_id_mapping
+            mappings[:id]             = find_id_mappings
             mappings[:relationships]  = find_relationship_mappings
             mappings[:relationships]['_self'] = self.class.type
             mappings
           end
         end
 
-        def find_id_mapping
-          self.class.definitions.detect { |definition|
+        def find_id_mapping(klass)
+          self_id = klass.definitions.detect { |definition|
             definition[:as] && definition[:as].(:value) == 'id'
           }.name
+        end
+
+        def find_id_mappings
+          included_definitions = self.class.definitions['included'].representer_module.definitions
+          id_mappings = included_definitions.each_with_object({}) do |definition, hash|
+            hash[definition.name] = find_id_mapping(definition[:decorator])
+          end
+          id_mappings['_self'] = find_id_mapping(self.class)
+          id_mappings
         end
 
         def find_relationship_mappings
