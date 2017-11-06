@@ -16,7 +16,7 @@ module Roar
         # @see http://www.ruby-doc.org/core/Module.html#method-i-included
         def self.included(base)
           base.defaults do |name, _|
-            { as: JSONAPI::MemberName.(name) }
+            { as: JSONAPI::MemberName.(name), render_nil: true }
           end
         end
       end

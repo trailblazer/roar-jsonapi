@@ -43,7 +43,7 @@ module Roar
         def included(base)
           base.send(:include, JSONAPI::Mixin)
           base.type(@type)
-          base.property(@id_key, as: :id, render_filter: ->(input, _opts) {
+          base.property(@id_key, as: :id, render_nil: false, render_filter: ->(input, _opts) {
                                                            input.to_s
                                                          })
         end

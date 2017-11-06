@@ -59,10 +59,16 @@ class JsonapiRenderTest < MiniTest::Spec
       "included": [{
         "id": "2",
         "type": "authors",
+        "attributes": {
+          "email": null
+        },
         "links": {
           "self": "http://authors/2"
         }
       }, {
+        "attributes": {
+          "email": null
+        },
         "id": "editor:1",
         "type": "editors"
       }, {
@@ -277,5 +283,69 @@ class JsonapiRenderTest < MiniTest::Spec
 
     it { VisualArtistDecorator.new(painter).to_json.must_equal_json document }
     it { VisualArtistDecorator.for_collection.new([painter]).to_json.must_equal_json collection_document }
+  end
+
+
+  describe 'null/ empty attributes render correctly' do
+    class ArtistDecorator < Roar::Decorator
+      include Roar::JSON::JSONAPI.resource :artists
+
+      attributes do
+        property :name
+        collection :known_aliases
+        property :movement
+        collection :noteable_works
+        property :genre, render_nil: false # tests that we can override default setting
+      end
+
+      link(:self)           { "http://artists/#{represented.id}" }
+    end
+
+    Painter = Struct.new(:id, :name, :known_aliases, :movement, :noteable_works, :genre)
+
+    let(:document) {
+      %({
+        "data": {
+          "type": "artists",
+          "id": "p1",
+          "attributes": {
+            "name": null,
+            "known-aliases": [],
+            "movement": null,
+            "noteable-works": []
+          },
+          "links": {
+            "self": "http://artists/p1"
+          }
+        }
+      })
+    }
+
+    let(:collection_document) {
+      %({
+        "data": [
+          {
+            "type": "artists",
+            "id": "p1",
+            "attributes": {
+              "name": null,
+              "known-aliases": [],
+              "movement": null,
+              "noteable-works": []
+            },
+            "links": {
+              "self": "http://artists/p1"
+            }
+          }
+        ]
+      })
+    }
+
+    let(:painter) {
+      Painter.new('p1', nil, [], nil, [], nil)
+    }
+
+    it { ArtistDecorator.new(painter).to_json.must_equal_json document }
+    it { ArtistDecorator.for_collection.new([painter]).to_json.must_equal_json collection_document }
   end
 end

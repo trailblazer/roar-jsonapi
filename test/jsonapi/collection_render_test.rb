@@ -3,7 +3,7 @@ require 'roar/json/json_api'
 require 'json'
 
 class JsonapiCollectionRenderTest < MiniTest::Spec
-  let(:article) { Article.new(1, 'Health walk', Author.new(2), Author.new('editor:1'), [Comment.new('comment:1', 'Ice and Snow'), Comment.new('comment:2', 'Red Stripe Skank')]) }
+  let(:article) { Article.new(1, 'Health walk', Author.new(2, 'someone@author.com'), Author.new('editor:1'), [Comment.new('comment:1', 'Ice and Snow'), Comment.new('comment:2', 'Red Stripe Skank')]) }
   let(:article2) { Article.new(2, 'Virgin Ska', Author.new('author:1'), nil, [Comment.new('comment:3', 'Cool song!')]) }
   let(:article3) { Article.new(3, 'Gramo echo', Author.new('author:1'), nil, [Comment.new('comment:4', 'Skalar')]) }
   let(:decorator) { ArticleDecorator.for_collection.new([article, article2, article3]) }
@@ -158,11 +158,17 @@ class JsonapiCollectionRenderTest < MiniTest::Spec
       },
       "included": [{
         "type": "authors",
+        "attributes": {
+          "email": "someone@author.com"
+        },
         "id": "2",
         "links": {
           "self": "http://authors/2"
         }
       }, {
+        "attributes": {
+          "email": null
+        },
         "type": "editors",
         "id": "editor:1"
       }, {
@@ -184,6 +190,9 @@ class JsonapiCollectionRenderTest < MiniTest::Spec
           "self": "http://comments/comment:2"
         }
       }, {
+        "attributes": {
+          "email": null
+        },
         "type": "authors",
         "id": "author:1",
         "links": {
