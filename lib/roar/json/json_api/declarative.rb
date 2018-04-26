@@ -153,6 +153,7 @@ module Roar
           nested(:included, inherit: true) do
             property(name, collection: options[:collection],
                            decorator:  resource_decorator,
+                           render_nil: false,
                            wrap:       false)
           end
 
