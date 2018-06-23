@@ -7,10 +7,15 @@ ruby RUBY_VERSION
 
 gemspec
 
-gem 'roar', github: 'trailblazer/roar', branch: 'master'
+case ENV["GEMS_SOURCE"]
+when "local"
+  gem "roar", path: "../roar"
+when "github"
+  gem 'roar', github: 'trailblazer/roar'
+end
 
 gem 'minitest-line'
 gem 'minitest-reporters'
 gem 'pry'
 
-gem 'json_spec', require: nil
+gem 'json_spec', require: false
