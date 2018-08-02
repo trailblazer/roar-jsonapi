@@ -38,7 +38,7 @@ class RelationshipCustomNameTest < MiniTest::Spec
     let(:souffle) {
       Recipe.new(1, 'Cheese Muffins',
                  Chef.new(1, 'Jamie Oliver'),
-                 [Ingredient.new(5, 'Eggs'), Ingredient.new(6, 'Gruyère')])
+                 [Ingredient.new(5, 'Eggs'), Ingredient.new(6, 'Emmental')])
     }
 
     it 'renders a single object for non-empty to-one relationships with custom name' do
