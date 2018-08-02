@@ -3,7 +3,7 @@ require 'roar/json/json_api'
 require 'json'
 
 class JsonapiRenderTest < MiniTest::Spec
-  let(:article) { Article.new(1, 'Health walk', Author.new(2), Author.new('editor:1'), [Comment.new('comment:1', 'Ice and Snow'), Comment.new('comment:2', 'Red Stripe Skank')]) }
+  let(:article) { Article.new(1, 'Health walk', Author.new(2), Author.new('editor:1'), [Comment.new('comment:1', 'Ice and Snow'), Comment.new('comment:2', 'Red Stripe Skank')], [Author.new('contributor:1'),Author.new('contributor:2')]) }
   let(:decorator) { ArticleDecorator.new(article) }
 
   it 'renders full document' do
@@ -44,7 +44,20 @@ class JsonapiRenderTest < MiniTest::Spec
               "related": "/articles/1/comments"
             },
             "meta": {
-              "comment-count": 5
+              "comment-count": 6
+            }
+          },
+          "contributors": {
+            "data": [{
+              "id": "contributor:1",
+              "type": "authors"
+            }, {
+              "id": "contributor:2",
+              "type": "authors"
+            }],
+            "links": {
+              "self": "/articles/1/relationships/contributors",
+              "related": "/articles/1/contributors"
             }
           }
         },
@@ -135,7 +148,20 @@ class JsonapiRenderTest < MiniTest::Spec
               "related": "/articles/1/comments"
             },
             "meta": {
-              "comment-count": 5
+              "comment-count": 6
+            }
+          },
+          "contributors": {
+            "data": [{
+              "id": "contributor:1",
+              "type": "authors"
+            }, {
+              "id": "contributor:2",
+              "type": "authors"
+            }],
+            "links": {
+              "self": "/articles/1/relationships/contributors",
+              "related": "/articles/1/contributors"
             }
           }
         },

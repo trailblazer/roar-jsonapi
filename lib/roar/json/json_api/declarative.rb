@@ -150,11 +150,14 @@ module Roar
             end
           end
 
-          nested(:included, inherit: true) do
-            property(name, collection: options[:collection],
-                           decorator:  resource_decorator,
-                           render_nil: false,
-                           wrap:       false)
+          add_included = options[:included].nil? ? true : options[:included]
+          if add_included
+            nested(:included, inherit: true) do
+              property(name, collection: options[:collection],
+                             decorator:  resource_decorator,
+                             render_nil: false,
+                             wrap:       false)
+            end
           end
 
           nested(:relationships, inherit: true) do

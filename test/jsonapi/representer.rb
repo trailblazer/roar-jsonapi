@@ -5,7 +5,7 @@ Author = Struct.new(:id, :email, :name) do
 end
 AuthorNine = Author.new(9, '9@nine.to')
 
-Article = Struct.new(:id, :title, :author, :editor, :comments) do
+Article = Struct.new(:id, :title, :author, :editor, :comments, :contributors) do
   def reviewers
     ['Christian Bernstein']
   end
@@ -107,6 +107,17 @@ class ArticleDecorator < Roar::Decorator
       meta do
         property :count, as: 'comment-count'
       end
+    end
+  end
+
+
+  # this relationship should be listed in relationships but no data included/sideloaded
+  has_many :contributors, class: Author, included: false do
+    type :authors
+
+    relationship do
+      link(:self)     { "/articles/#{represented.id}/relationships/contributors" }
+      link(:related)  { "/articles/#{represented.id}/contributors" }
     end
   end
 end
