@@ -112,6 +112,7 @@ module Roar
         # @option options [Proc] :prepare	Decorate the represented object
         # @option options [Class,Proc] :class Class to instantiate when parsing nested fragment
         # @option options [Proc] :instance Instantiate object directly when parsing nested fragment
+        # @option options [TrueClass, FalseClass] :included (default: true) whether to include relation data in included object of compound document
         # @param [#call] block Stuff
         #
         # @see http://trailblazer.to/gems/representable/3.0/function-api.html#options
