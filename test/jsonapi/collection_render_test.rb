@@ -3,9 +3,9 @@ require 'roar/json/json_api'
 require 'json'
 
 class JsonapiCollectionRenderTest < MiniTest::Spec
-  let(:article) { Article.new(1, 'Health walk', Author.new(2, 'someone@author.com'), Author.new('editor:1'), [Comment.new('comment:1', 'Ice and Snow'), Comment.new('comment:2', 'Red Stripe Skank')]) }
-  let(:article2) { Article.new(2, 'Virgin Ska', Author.new('author:1'), nil, [Comment.new('comment:3', 'Cool song!')]) }
-  let(:article3) { Article.new(3, 'Gramo echo', Author.new('author:1'), nil, [Comment.new('comment:4', 'Skalar')]) }
+  let(:article) { Article.new(1, 'Health walk', Author.new(2, 'someone@author.com'), Author.new('editor:1'), [Comment.new('comment:1', 'Ice and Snow'), Comment.new('comment:2', 'Red Stripe Skank')], [Author.new('contributor:1'), Author.new('contributor:2')]) }
+  let(:article2) { Article.new(2, 'Virgin Ska', Author.new('author:1'), nil, [Comment.new('comment:3', 'Cool song!')], [Author.new('contributor:1'), Author.new('contributor:2')]) }
+  let(:article3) { Article.new(3, 'Gramo echo', Author.new('author:1'), nil, [Comment.new('comment:4', 'Skalar')], [Author.new('contributor:1'), Author.new('contributor:2')]) }
   let(:decorator) { ArticleDecorator.for_collection.new([article, article2, article3]) }
 
   it 'renders full document' do
@@ -50,7 +50,20 @@ class JsonapiCollectionRenderTest < MiniTest::Spec
               "related": "/articles/1/comments"
             },
             "meta": {
-              "comment-count": 5
+              "comment-count": 6
+            }
+          },
+          "contributors": {
+            "data": [{
+              "id": "contributor:1",
+              "type": "authors"
+            }, {
+              "id": "contributor:2",
+              "type": "authors"
+            }],
+            "links": {
+              "self": "/articles/1/relationships/contributors",
+              "related": "/articles/1/contributors"
             }
           }
         },
@@ -94,7 +107,20 @@ class JsonapiCollectionRenderTest < MiniTest::Spec
               "related": "/articles/2/comments"
             },
             "meta": {
-              "comment-count": 5
+              "comment-count": 6
+            }
+          },
+          "contributors": {
+            "data": [{
+              "id": "contributor:1",
+              "type": "authors"
+            }, {
+              "id": "contributor:2",
+              "type": "authors"
+            }],
+            "links": {
+              "self": "/articles/2/relationships/contributors",
+              "related": "/articles/2/contributors"
             }
           }
         },
@@ -138,7 +164,20 @@ class JsonapiCollectionRenderTest < MiniTest::Spec
               "related": "/articles/3/comments"
             },
             "meta": {
-              "comment-count": 5
+              "comment-count": 6
+            }
+          },
+          "contributors": {
+            "data": [{
+              "id": "contributor:1",
+              "type": "authors"
+            }, {
+              "id": "contributor:2",
+              "type": "authors"
+            }],
+            "links": {
+              "self": "/articles/3/relationships/contributors",
+              "related": "/articles/3/contributors"
             }
           }
         },
@@ -262,7 +301,20 @@ class JsonapiCollectionRenderTest < MiniTest::Spec
               "related": "/articles/1/comments"
             },
             "meta": {
-              "comment-count": 5
+              "comment-count": 6
+            }
+          },
+          "contributors": {
+            "data": [{
+              "id": "contributor:1",
+              "type": "authors"
+            }, {
+              "id": "contributor:2",
+              "type": "authors"
+            }],
+            "links": {
+              "self": "/articles/1/relationships/contributors",
+              "related": "/articles/1/contributors"
             }
           }
         },
@@ -306,7 +358,20 @@ class JsonapiCollectionRenderTest < MiniTest::Spec
               "related": "/articles/2/comments"
             },
             "meta": {
-              "comment-count": 5
+              "comment-count": 6
+            }
+          },
+          "contributors": {
+            "data": [{
+              "id": "contributor:1",
+              "type": "authors"
+            }, {
+              "id": "contributor:2",
+              "type": "authors"
+            }],
+            "links": {
+              "self": "/articles/2/relationships/contributors",
+              "related": "/articles/2/contributors"
             }
           }
         },
@@ -350,7 +415,20 @@ class JsonapiCollectionRenderTest < MiniTest::Spec
               "related": "/articles/3/comments"
             },
             "meta": {
-              "comment-count": 5
+              "comment-count": 6
+            }
+          },
+          "contributors": {
+            "data": [{
+              "id": "contributor:1",
+              "type": "authors"
+            }, {
+              "id": "contributor:2",
+              "type": "authors"
+            }],
+            "links": {
+              "self": "/articles/3/relationships/contributors",
+              "related": "/articles/3/contributors"
             }
           }
         },

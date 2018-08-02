@@ -112,6 +112,8 @@ module Roar
         # @option options [Proc] :prepare	Decorate the represented object
         # @option options [Class,Proc] :class Class to instantiate when parsing nested fragment
         # @option options [Proc] :instance Instantiate object directly when parsing nested fragment
+        # @option options [TrueClass, FalseClass] :included (default: true) whether to include relation data in included object of compound document
+        # @param options [String] :as custom name for relationship e.g. camel_case
         # @param [#call] block Stuff
         #
         # @see http://trailblazer.to/gems/representable/3.0/function-api.html#options
@@ -150,15 +152,18 @@ module Roar
             end
           end
 
-          nested(:included, inherit: true) do
-            property(name, collection: options[:collection],
-                           decorator:  resource_decorator,
-                           render_nil: false,
-                           wrap:       false)
+          add_included = options[:included].nil? ? true : options[:included]
+          if add_included
+            nested(:included, inherit: true) do
+              property(name, collection: options[:collection],
+                             decorator:  resource_decorator,
+                             render_nil: false,
+                             wrap:       false)
+            end
           end
 
           nested(:relationships, inherit: true) do
-            nested(:"#{name}_relationship", as: MemberName.(name)) do
+            nested(:"#{name}_relationship", as: options[:as] || MemberName.(name)) do
               property name, options.merge(as:           :data,
                                            getter:       ->(opts) {
                                              object = opts[:binding].send(:exec_context, opts)
