@@ -15,7 +15,7 @@ when "github"
 end
 
 gem 'minitest-line'
-gem 'minitest-reporters'
+gem 'minitest-reporters', '<= 1.3.0' # Note 1.3.1 is broken see https://github.com/kern/minitest-reporters/issues/267
 gem 'pry'
 
 gem 'json_spec', require: false
