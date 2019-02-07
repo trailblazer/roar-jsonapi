@@ -3,7 +3,7 @@ require 'roar/json/json_api'
 require 'json'
 
 class JSONAPIFieldsetsTest < Minitest::Spec
-  Article = Struct.new(:id, :title, :summary, :comments, :author)
+  Article = Struct.new(:id, :title, :summary, :comments, :author, :slug)
   Comment = Struct.new(:id, :body, :good, :comment_author)
   Author = Struct.new(:id, :name, :email)
 
@@ -456,6 +456,92 @@ class JSONAPIFieldsetsTest < Minitest::Spec
     it do
       DocumentResourceWithDifferentIdAtRelation.new(article).to_json(include: 'comments')
                                                .must_equal_json document
+    end
+  end
+
+  describe 'Document with given id_key and nested resources with given id_key' do
+    class CommentDecoratorWithId < Roar::Decorator
+      include Roar::JSON::JSONAPI.resource :comments, id_key: :comment_id
+
+      attributes do
+        property :body
+        property :good
+      end
+    end
+
+    class DocumentAndRelationWithDifferentId < Roar::Decorator
+      include Roar::JSON::JSONAPI.resource :articles, id_key: :slug
+
+      attributes do
+        property :title
+        property :summary
+      end
+
+      has_many :comments, decorator: CommentDecoratorWithId
+    end
+
+    let(:comments) {
+      klass = Struct.new(:comment_id, :body, :good, :comment_author)
+      [
+        klass.new('c:1', 'Cool!', true,
+                  Author.new('a:2', 'Tim', 'troll@trollblazer.io')),
+        klass.new('c:2', 'Nah', false)
+      ]
+    }
+
+    let(:article) {
+      Article.new(1, 'My Article', 'An interesting read.', comments,
+                  Author.new('a:1', 'Celso', 'celsito@trb.to'), 'my-article')
+    }
+
+    let(:document) {
+      %({
+        "data": {
+          "id": "my-article",
+          "attributes": {
+            "summary": "An interesting read.",
+            "title": "My Article"
+          },
+          "type": "articles",
+          "relationships": {
+            "comments": {
+              "data": [
+                {
+                  "id": "c:1",
+                  "type": "comments"
+                },
+                {
+                  "id": "c:2",
+                  "type": "comments"
+                }
+              ]
+            }
+          }
+        },
+        "included": [
+          {
+            "type": "comments",
+            "id": "c:1",
+            "attributes": {
+              "body": "Cool!",
+              "good": true
+            }
+          },
+          {
+            "type": "comments",
+            "id": "c:2",
+            "attributes": {
+              "body": "Nah",
+              "good": false
+            }
+          }
+        ]
+      })
+    }
+
+    it do
+      DocumentAndRelationWithDifferentId.new(article).to_json(include: 'comments')
+                                                     .must_equal_json document
     end
   end
 end
