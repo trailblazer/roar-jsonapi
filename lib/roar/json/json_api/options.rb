@@ -20,7 +20,7 @@ module Roar
 
             internal_options = {}
             rewrite_include_option!(internal_options, include,
-                                    mappings.fetch(:id, :id))
+                                    mappings.fetch(:id, {}))
             rewrite_fields!(internal_options, fields,
                             mappings.fetch(:relationships, {}))
 
@@ -30,14 +30,19 @@ module Roar
 
           private
 
-          def rewrite_include_option!(options, include, id_mapping)
+          def default_includes_for(name, id_mappings)
+            [id_mappings.fetch(name.to_s, :id).to_sym] + DEFAULT_INTERNAL_INCLUDES
+          end
+
+          def rewrite_include_option!(options, include, id_mappings)
             include_paths      = parse_include_option(include)
-            default_includes   = [id_mapping.to_sym] + DEFAULT_INTERNAL_INCLUDES
+            default_includes   = default_includes_for('_self', id_mappings)
             options[:include]  = default_includes + [:included]
             options[:included] = { include: include_paths.map(&:first) - [:_self] }
             include_paths.each do |include_path|
+              includes = default_includes_for(include_path.first, id_mappings)
               options[:included].merge!(
-                explode_include_path(*include_path, default_includes)
+                explode_include_path(*include_path, includes)
               )
             end
             options
