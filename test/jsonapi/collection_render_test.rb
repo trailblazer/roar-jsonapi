@@ -10,7 +10,7 @@ class JsonapiCollectionRenderTest < MiniTest::Spec
 
   it 'renders full document' do
     json = decorator.to_json
-    json.must_equal_json(%({
+    _(json).must_equal_json(%({
       "data": [{
         "type": "articles",
         "id": "1",
@@ -261,7 +261,7 @@ class JsonapiCollectionRenderTest < MiniTest::Spec
 
   it 'included: false suppresses compound docs' do
     json = decorator.to_json(included: false)
-    json.must_equal_json(%({
+    _(json).must_equal_json(%({
       "data": [{
         "type": "articles",
         "id": "1",
@@ -451,12 +451,12 @@ class JsonapiCollectionRenderTest < MiniTest::Spec
 
   it 'passes :user_options to toplevel links when rendering' do
     hash = decorator.to_hash(user_options: { page: 2, per_page: 10 })
-    hash['links'].must_equal('self' => '//articles?page=2&per_page=10')
+    _(hash['links']).must_equal('self' => '//articles?page=2&per_page=10')
   end
 
   it 'renders extra toplevel meta information if meta option supplied' do
     hash = decorator.to_hash(meta: { page: 2, total: 9 })
-    hash['meta'].must_equal('count' => 3, page: 2, total: 9)
+    _(hash['meta']).must_equal('count' => 3, page: 2, total: 9)
   end
 
   it 'does not render extra meta information on resource objects' do
@@ -467,8 +467,8 @@ class JsonapiCollectionRenderTest < MiniTest::Spec
 
   it 'does not render extra toplevel meta information if meta option is empty' do
     hash = decorator.to_hash(meta: {})
-    hash['meta'][:page].must_be_nil
-    hash['meta'][:total].must_be_nil
+    _(hash['meta'][:page]).must_be_nil
+    _(hash['meta'][:total]).must_be_nil
   end
 
   describe 'Fetching Resources (empty collection)' do
@@ -487,6 +487,6 @@ class JsonapiCollectionRenderTest < MiniTest::Spec
     let(:articles) { [] }
     subject { ArticleDecorator.for_collection.new(articles).to_json }
 
-    it { subject.must_equal_json document }
+    it { _(subject).must_equal_json document }
   end
 end

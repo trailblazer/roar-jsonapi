@@ -42,13 +42,13 @@ class RelationshipCustomNameTest < MiniTest::Spec
     }
 
     it 'renders a single object for non-empty to-one relationships with custom name' do
-      doc_relationships['best_chef'].must_be_nil
-      doc_relationships['bestChefEver'].wont_be_nil
+      _(doc_relationships['best_chef']).must_be_nil
+      _(doc_relationships['bestChefEver']).wont_be_nil
     end
 
     it 'renders an array for non-empty to-many relationships with custom name' do
-      doc_relationships['best_ingredients'].must_be_nil
-      doc_relationships['bestIngridients'].wont_be_nil
+      _(doc_relationships['best_ingredients']).must_be_nil
+      _(doc_relationships['bestIngridients']).wont_be_nil
     end
   end
 end
