@@ -1,5 +1,7 @@
 AllCops:
   TargetRubyVersion: 1.9
+  DisplayCopNames: true
+  DisplayStyleGuide: true
 
 Style/AlignHash:
   EnforcedHashRocketStyle: table
@@ -17,6 +19,9 @@ Style/BlockDelimiters:
     - it
     - link
 
+Style/Documentation:
+  Enabled: false
+
 Style/Lambda:
   Enabled: false
   EnforcedStyle: literal
@@ -24,8 +29,12 @@ Style/Lambda:
 Style/LambdaCall:
   EnforcedStyle: braces
 
+Metrics/ClassLength:
+  Exclude:
+    - 'test/**/*'
+
 Metrics/LineLength:
-  Enabled: false
+  Max: 200
 
 Metrics/MethodLength:
   Max: 15
@@ -35,3 +44,4 @@ Style/PredicateName:
     - is_a?
     - has_one
     - has_many
+    - has_relationship

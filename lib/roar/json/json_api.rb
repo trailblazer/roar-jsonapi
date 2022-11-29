@@ -44,8 +44,8 @@ module Roar
           base.send(:include, JSONAPI::Mixin)
           base.type(@type)
           base.property(@id_key, as: :id, render_nil: false, render_filter: ->(input, _opts) {
-                                                           input.to_s
-                                                         })
+                                                                              input.to_s
+                                                                            })
         end
       end
 
@@ -96,7 +96,7 @@ module Roar
         #
         # @api private
         # @see http://www.ruby-doc.org/core/Module.html#method-i-included
-        def self.included(base)
+        def self.included(base) # rubocop:disable Metrics/MethodLength
           base.class_eval do
             feature Roar::JSON
             feature Roar::Hypermedia

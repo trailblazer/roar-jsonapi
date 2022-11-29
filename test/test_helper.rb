@@ -24,19 +24,25 @@ module JsonSpec
 
   self.excluded_keys = []
 end
-module MiniTest::Assertions
-  def assert_equal_json(actual, expected)
-    assert_equal scrub(actual), scrub(expected)
-  end
 
-  def scrub(json, path = nil)
-    JsonSpec::Helpers.generate_normalized_json(
-      JsonSpec::Exclusion.exclude_keys(
-        JsonSpec::Helpers.parse_json(json, path)
-      )
-    ).chomp + "\n"
+module MiniTest
+  module Assertions
+    def assert_equal_json(actual, expected)
+      assert_equal scrub(actual), scrub(expected)
+    end
+
+    def scrub(json, path = nil)
+      JsonSpec::Helpers.generate_normalized_json(
+        JsonSpec::Exclusion.exclude_keys(
+          JsonSpec::Helpers.parse_json(json, path)
+        )
+      ).chomp + "\n"
+    end
   end
 end
-module Minitest::Expectations
-  infect_an_assertion :assert_equal_json, :must_equal_json
+
+module Minitest
+  module Expectations
+    infect_an_assertion :assert_equal_json, :must_equal_json
+  end
 end

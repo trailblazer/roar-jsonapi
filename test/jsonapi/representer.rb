@@ -75,7 +75,6 @@ class ArticleDecorator < Roar::Decorator
   # relationships
   has_one :author, class: Author, decorator: AuthorDecorator,
     populator: ::Representable::FindOrInstantiate do # populator is for parsing, only.
-
     relationship do
       link(:self)     { "/articles/#{represented.id}/relationships/author" }
       link(:related)  { "/articles/#{represented.id}/author" }
@@ -99,7 +98,6 @@ class ArticleDecorator < Roar::Decorator
 
   has_many :comments, class: Comment, decorator: CommentDecorator,
     populator: ::Representable::FindOrInstantiate do
-
     relationship do
       link(:self)     { "/articles/#{represented.id}/relationships/comments" }
       link(:related)  { "/articles/#{represented.id}/comments" }
@@ -109,7 +107,6 @@ class ArticleDecorator < Roar::Decorator
       end
     end
   end
-
 
   # this relationship should be listed in relationships but no data included/sideloaded
   has_many :contributors, class: Author, included: false do

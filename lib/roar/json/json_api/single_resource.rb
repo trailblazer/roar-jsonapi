@@ -6,7 +6,7 @@ module Roar
       # @api private
       module SingleResource
         # @see Document#to_hash
-        def to_hash(options = {})
+        def to_hash(options = {}) # rubocop:disable Metrics/AbcSize
           document  = super(Options::Include.(options, mappings))
           unwrapped = options[:wrap] == false
           resource  = unwrapped ? document : document['data']
@@ -43,7 +43,7 @@ module Roar
         end
 
         def find_id_mapping(klass)
-          self_id = klass.definitions.detect { |definition|
+          klass.definitions.detect { |definition|
             definition[:as] && definition[:as].(:value) == 'id'
           }.name
         end

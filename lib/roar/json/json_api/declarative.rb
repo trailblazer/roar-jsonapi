@@ -134,7 +134,7 @@ module Roar
 
         private
 
-        def has_relationship(name, options = {}, &block)
+        def has_relationship(name, options = {}, &block) # rubocop:disable Metrics/AbcSize,Metrics/CyclomaticComplexity,Metrics/MethodLength,Metrics/PerceivedComplexity
           resource_decorator = options.delete(:decorator) ||
                                options.delete(:extend)    ||
                                Class.new(Roar::Decorator).tap { |decorator|
