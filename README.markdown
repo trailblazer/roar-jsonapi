@@ -4,7 +4,7 @@ _Resource-Oriented Architectures in Ruby._
 
 [![Gitter Chat](https://badges.gitter.im/trailblazer/chat.svg)](https://gitter.im/trailblazer/chat)
 [![TRB Newsletter](https://img.shields.io/badge/TRB-newsletter-lightgrey.svg)](http://trailblazer.to/newsletter/)
-[![Build Status](https://travis-ci.org/trailblazer/roar-jsonapi.svg?branch=master)](https://travis-ci.org/trailblazer/roar-jsonapi)
+![.github/workflows/tests.yml](https://github.com/trailblazer/roar-jsonapi/workflows/.github/workflows/tests.yml/badge.svg)
 [![Gem Version](https://badge.fury.io/rb/roar-jsonapi.svg)](http://badge.fury.io/rb/roar-jsonapi)
 
 Roar JSON API provides support for [JSON API](http://jsonapi.org/), a specification for building APIs in JSON. It can render _and_ parse singular and collection documents.
