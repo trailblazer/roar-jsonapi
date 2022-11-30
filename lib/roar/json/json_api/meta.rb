@@ -36,7 +36,7 @@ module Roar
             representable_attrs[:meta_representer] ||= nested_builder.(
               _base:     default_nested_class,
               _features: [Roar::JSON, JSONAPI::Defaults],
-              _block:    Proc.new
+              _block:    block
             )
             representable_attrs[:meta_representer].instance_exec(&block)
           end
