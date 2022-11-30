@@ -24,8 +24,8 @@ class RelationshipCustomNameTest < MiniTest::Spec
       property :name
     end
 
-    has_one   :best_chef,        as: "bestChefEver", extend: ChefDecorator
-    has_many  :best_ingredients, as: "bestIngridients", extend: IngredientDecorator
+    has_one   :best_chef,        as: 'bestChefEver', extend: ChefDecorator
+    has_many  :best_ingredients, as: 'bestIngridients', extend: IngredientDecorator
   end
 
   Recipe      = Struct.new(:id, :name, :best_chef, :best_ingredients, :reviews)

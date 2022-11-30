@@ -319,7 +319,7 @@ class JSONAPIFieldsetsTest < Minitest::Spec
     let(:article) {
       klass = Struct.new(:article_id, :title, :summary, :comments, :author)
       klass.new(1, 'My Article', 'An interesting read.', comments,
-                  Author.new('a:1', 'Celso', 'celsito@trb.to'))
+                Author.new('a:1', 'Celso', 'celsito@trb.to'))
     }
 
     let(:document) {
@@ -541,7 +541,7 @@ class JSONAPIFieldsetsTest < Minitest::Spec
 
     it do
       DocumentAndRelationWithDifferentId.new(article).to_json(include: 'comments')
-                                                     .must_equal_json document
+                                        .must_equal_json document
     end
   end
 end

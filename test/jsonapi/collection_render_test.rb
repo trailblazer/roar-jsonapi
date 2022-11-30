@@ -3,9 +3,39 @@ require 'roar/json/json_api'
 require 'json'
 
 class JsonapiCollectionRenderTest < MiniTest::Spec
-  let(:article) { Article.new(1, 'Health walk', Author.new(2, 'someone@author.com'), Author.new('editor:1'), [Comment.new('comment:1', 'Ice and Snow'), Comment.new('comment:2', 'Red Stripe Skank')], [Author.new('contributor:1'), Author.new('contributor:2')]) }
-  let(:article2) { Article.new(2, 'Virgin Ska', Author.new('author:1'), nil, [Comment.new('comment:3', 'Cool song!')], [Author.new('contributor:1'), Author.new('contributor:2')]) }
-  let(:article3) { Article.new(3, 'Gramo echo', Author.new('author:1'), nil, [Comment.new('comment:4', 'Skalar')], [Author.new('contributor:1'), Author.new('contributor:2')]) }
+  let(:article) do
+    Article.new(
+      1,
+      'Health walk',
+      Author.new(2, 'someone@author.com'),
+      Author.new('editor:1'),
+      [Comment.new('comment:1', 'Ice and Snow'), Comment.new('comment:2', 'Red Stripe Skank')],
+      [Author.new('contributor:1'), Author.new('contributor:2')]
+    )
+  end
+
+  let(:article2) do
+    Article.new(
+      2,
+      'Virgin Ska',
+      Author.new('author:1'),
+      nil,
+      [Comment.new('comment:3', 'Cool song!')],
+      [Author.new('contributor:1'), Author.new('contributor:2')]
+    )
+  end
+
+  let(:article3) do
+    Article.new(
+      3,
+      'Gramo echo',
+      Author.new('author:1'),
+      nil,
+      [Comment.new('comment:4', 'Skalar')],
+      [Author.new('contributor:1'), Author.new('contributor:2')]
+    )
+  end
+
   let(:decorator) { ArticleDecorator.for_collection.new([article, article2, article3]) }
 
   it 'renders full document' do

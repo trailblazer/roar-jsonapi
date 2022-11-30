@@ -3,7 +3,17 @@ require 'roar/json/json_api'
 require 'json'
 
 class JsonapiRenderTest < MiniTest::Spec
-  let(:article) { Article.new(1, 'Health walk', Author.new(2), Author.new('editor:1'), [Comment.new('comment:1', 'Ice and Snow'), Comment.new('comment:2', 'Red Stripe Skank')], [Author.new('contributor:1'),Author.new('contributor:2')]) }
+  let(:article) do
+    Article.new(
+      1,
+      'Health walk',
+      Author.new(2),
+      Author.new('editor:1'),
+      [Comment.new('comment:1', 'Ice and Snow'), Comment.new('comment:2', 'Red Stripe Skank')],
+      [Author.new('contributor:1'), Author.new('contributor:2')]
+    )
+  end
+
   let(:decorator) { ArticleDecorator.new(article) }
 
   it 'renders full document' do
@@ -311,7 +321,6 @@ class JsonapiRenderTest < MiniTest::Spec
     it { VisualArtistDecorator.for_collection.new([painter]).to_json.must_equal_json collection_document }
   end
 
-
   describe 'null/ empty attributes render correctly' do
     class ArtistDecorator < Roar::Decorator
       include Roar::JSON::JSONAPI.resource :artists
@@ -324,7 +333,7 @@ class JsonapiRenderTest < MiniTest::Spec
         property :genre, render_nil: false # tests that we can override default setting
       end
 
-      link(:self)           { "http://artists/#{represented.id}" }
+      link(:self) { "http://artists/#{represented.id}" }
     end
 
     Painter = Struct.new(:id, :name, :known_aliases, :movement, :noteable_works, :genre)
