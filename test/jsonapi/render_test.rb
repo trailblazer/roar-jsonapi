@@ -250,7 +250,7 @@ class JsonapiRenderTest < MiniTest::Spec
       link(:wikipedia_page) { "https://en.wikipedia.org/wiki/#{represented.name}" }
     end
 
-    Painter = Struct.new(:id, :name, :known_aliases, :movement, :noteable_works)
+    let(:painter_class) { Struct.new(:id, :name, :known_aliases, :movement, :noteable_works) }
 
     let(:document) {
       %({
@@ -303,7 +303,7 @@ class JsonapiRenderTest < MiniTest::Spec
     }
 
     let(:painter) {
-      Painter.new('p1', 'Pablo Picasso', ['Pablo Ruiz Picasso'], 'Cubism',
+      painter_class.new('p1', 'Pablo Picasso', ['Pablo Ruiz Picasso'], 'Cubism',
                   %w(Kahnweiler Guernica))
     }
 
@@ -327,7 +327,7 @@ class JsonapiRenderTest < MiniTest::Spec
       link(:self)           { "http://artists/#{represented.id}" }
     end
 
-    Painter = Struct.new(:id, :name, :known_aliases, :movement, :noteable_works, :genre)
+    let(:painter_class) { Struct.new(:id, :name, :known_aliases, :movement, :noteable_works, :genre) }
 
     let(:document) {
       %({
@@ -368,7 +368,7 @@ class JsonapiRenderTest < MiniTest::Spec
     }
 
     let(:painter) {
-      Painter.new('p1', nil, [], nil, [], nil)
+      painter_class.new('p1', nil, [], nil, [], nil)
     }
 
     it { ArtistDecorator.new(painter).to_json.must_equal_json document }
