@@ -55,11 +55,11 @@ class ResourceLinkageTest < MiniTest::Spec
     }
 
     it 'renders a single object for non-empty to-one relationships' do
-      doc_relationships['chef'].must_equal('data'=>{ 'type' => 'chefs', 'id' => '1' })
+      _(doc_relationships['chef']).must_equal('data'=>{ 'type' => 'chefs', 'id' => '1' })
     end
 
     it 'renders an array for non-empty to-many relationships' do
-      doc_relationships['ingredients'].must_equal('data' => [
+      _(doc_relationships['ingredients']).must_equal('data' => [
                                                     { 'type' => 'ingredients', 'id' => '5' },
                                                     { 'type' => 'ingredients', 'id' => '6' }
                                                   ])
@@ -70,11 +70,11 @@ class ResourceLinkageTest < MiniTest::Spec
     let(:souffle) { Recipe.new(1, 'Cheese soufflé', nil, nil) }
 
     it 'renders null for an empty to-one relationships' do
-      doc_relationships['chef'].must_equal('data' => nil)
+      _(doc_relationships['chef']).must_equal('data' => nil)
     end
 
     it 'renders an empty array ([]) for empty (nil) to-many relationships' do
-      doc_relationships['ingredients'].must_equal('data' => [])
+      _(doc_relationships['ingredients']).must_equal('data' => [])
     end
   end
 
@@ -82,7 +82,7 @@ class ResourceLinkageTest < MiniTest::Spec
     let(:souffle) { Recipe.new(1, 'Cheese soufflé', nil, []) }
 
     it 'renders an empty array ([]) for empty to-many relationships' do
-      doc_relationships['ingredients'].must_equal('data' => [])
+      _(doc_relationships['ingredients']).must_equal('data' => [])
     end
   end
 end

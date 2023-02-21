@@ -56,10 +56,10 @@ class JSONAPIFieldsetsTest < Minitest::Spec
     }
 
     it 'includes scalars' do
-      DocumentSingleResourceObjectDecorator.new(article)
+      _(DocumentSingleResourceObjectDecorator.new(article)
                                            .to_json(
                                              fields: { articles: 'title' }
-                                           )
+                                           ))
                                            .must_equal_json(%(
           {
             "data": {
@@ -74,11 +74,11 @@ class JSONAPIFieldsetsTest < Minitest::Spec
     end
 
     it 'includes compound objects' do
-      DocumentSingleResourceObjectDecorator.new(article)
+      _(DocumentSingleResourceObjectDecorator.new(article)
                                            .to_json(
                                              fields:  { articles: 'title' },
                                              include: :comments
-                                           )
+                                           ))
                                            .must_equal_json(%(
           {
             "data": {
@@ -124,11 +124,11 @@ class JSONAPIFieldsetsTest < Minitest::Spec
     end
 
     it 'includes nested compound objects' do
-      DocumentSingleResourceObjectDecorator.new(article)
+      _(DocumentSingleResourceObjectDecorator.new(article)
                                            .to_json(
                                              fields:  { articles: 'title' },
                                              include: 'comments.author'
-                                           )
+                                           ))
                                            .must_equal_json(%(
           {
             "data": {
@@ -184,11 +184,11 @@ class JSONAPIFieldsetsTest < Minitest::Spec
     end
 
     it 'includes other compound objects' do
-      DocumentSingleResourceObjectDecorator.new(article)
+      _(DocumentSingleResourceObjectDecorator.new(article)
                                            .to_json(
                                              fields:  { articles: 'title' },
                                              include: :author
-                                           )
+                                           ))
                                            .must_equal_json(%(
           {
             "data": {
@@ -214,11 +214,11 @@ class JSONAPIFieldsetsTest < Minitest::Spec
 
     describe 'collection' do
       it 'supports :includes' do
-        DocumentSingleResourceObjectDecorator.for_collection.new([article])
+        _(DocumentSingleResourceObjectDecorator.for_collection.new([article])
                                              .to_hash(
                                                fields:  { articles: 'title' },
                                                include: :author
-                                             )
+                                             ))
                                              .must_equal Hash[{
                                                'data'     => [
                                                  { 'type'       => 'articles',
@@ -232,11 +232,11 @@ class JSONAPIFieldsetsTest < Minitest::Spec
 
       # include: ROAR API
       it 'blaaaaaaa' do
-        DocumentSingleResourceObjectDecorator.for_collection.new([article])
+        _(DocumentSingleResourceObjectDecorator.for_collection.new([article])
                                              .to_hash(
                                                fields:  { articles: 'title', authors: [:email] },
                                                include: :author
-                                             )
+                                             ))
                                              .must_equal Hash[{
                                                'data'     => [
                                                  { 'type'       => 'articles',
@@ -282,12 +282,12 @@ class JSONAPIFieldsetsTest < Minitest::Spec
     }
 
     it do
-      CollectionResourceObjectDecorator.for_collection.new([
+      _(CollectionResourceObjectDecorator.for_collection.new([
                                                              Article.new(1, 'My Article', 'An interesting read.'),
                                                              Article.new(2, 'My Other Article', 'An interesting read.')
                                                            ]).to_json(
                                                              fields: { articles: :title }
-                                                           ).must_equal_json document
+                                                           )).must_equal_json document
     end
   end
 
@@ -368,7 +368,7 @@ class JSONAPIFieldsetsTest < Minitest::Spec
     }
 
     it do
-      DocumentResourceWithDifferentIdAtRoot.new(article).to_json(include: 'comments')
+      _(DocumentResourceWithDifferentIdAtRoot.new(article).to_json(include: 'comments'))
                                            .must_equal_json document
     end
   end
@@ -454,7 +454,7 @@ class JSONAPIFieldsetsTest < Minitest::Spec
     }
 
     it do
-      DocumentResourceWithDifferentIdAtRelation.new(article).to_json(include: 'comments')
+      _(DocumentResourceWithDifferentIdAtRelation.new(article).to_json(include: 'comments'))
                                                .must_equal_json document
     end
   end
@@ -540,7 +540,7 @@ class JSONAPIFieldsetsTest < Minitest::Spec
     }
 
     it do
-      DocumentAndRelationWithDifferentId.new(article).to_json(include: 'comments')
+      _(DocumentAndRelationWithDifferentId.new(article).to_json(include: 'comments'))
                                                      .must_equal_json document
     end
   end

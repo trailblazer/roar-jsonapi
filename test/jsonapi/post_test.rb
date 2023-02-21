@@ -36,12 +36,12 @@ class JsonapiPostTest < MiniTest::Spec
     subject { ArticleDecorator.new(Article.new(nil, nil, nil, nil, [])).from_json(post_article) }
 
     it do
-      subject.title.must_equal 'Ember Hamster'
-      subject.author.id.must_equal '9'
-      subject.author.email.must_equal '9@nine.to'
+      _(subject.title).must_equal 'Ember Hamster'
+      _(subject.author.id).must_equal '9'
+      _(subject.author.email).must_equal '9@nine.to'
       # subject.author.name.must_be_nil
 
-      subject.comments.must_equal [Comment.new('2'), Comment.new('3')]
+      _(subject.comments).must_equal [Comment.new('2'), Comment.new('3')]
     end
   end
 
@@ -60,7 +60,7 @@ class JsonapiPostTest < MiniTest::Spec
     subject { ArticleDecorator.new(Article.new(nil, nil, nil, nil, [])).from_json(post_article) }
 
     it do
-      subject.title.must_equal 'Ember Hamster'
+      _(subject.title).must_equal 'Ember Hamster'
     end
   end
 
@@ -72,7 +72,7 @@ class JsonapiPostTest < MiniTest::Spec
     subject { ArticleDecorator.new(Article.new(nil, nil, nil, nil, [])).from_json(post_article) }
 
     it do
-      subject.title.must_be_nil
+      _(subject.title).must_be_nil
     end
   end
 end

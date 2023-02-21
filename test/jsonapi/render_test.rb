@@ -8,7 +8,7 @@ class JsonapiRenderTest < MiniTest::Spec
 
   it 'renders full document' do
     json = decorator.to_json
-    json.must_equal_json(%({
+    _(json).must_equal_json(%({
       "data": {
         "id": "1",
         "relationships": {
@@ -112,7 +112,7 @@ class JsonapiRenderTest < MiniTest::Spec
 
   it 'included: false suppresses compound docs' do
     json = decorator.to_json(included: false)
-    json.must_equal_json(%({
+    _(json).must_equal_json(%({
       "data": {
         "id": "1",
         "relationships": {
@@ -184,16 +184,16 @@ class JsonapiRenderTest < MiniTest::Spec
     hash = decorator.to_hash(meta: {
                                'copyright' => 'Nick Sutterer', 'reviewers' => []
                              })
-    hash['meta']['copyright'].must_equal('Nick Sutterer')
-    hash['meta']['reviewers'].must_equal([])
-    hash['meta']['reviewer-initials'].must_equal('C.B.')
+    _(hash['meta']['copyright']).must_equal('Nick Sutterer')
+    _(hash['meta']['reviewers']).must_equal([])
+    _(hash['meta']['reviewer-initials']).must_equal('C.B.')
   end
 
   it 'does not render extra toplevel meta information if meta option is empty' do
     hash = decorator.to_hash(meta: {})
-    hash['meta']['copyright'].must_be_nil
-    hash['meta']['reviewers'].must_equal(['Christian Bernstein'])
-    hash['meta']['reviewer-initials'].must_equal('C.B.')
+    _(hash['meta']['copyright']).must_be_nil
+    _(hash['meta']['reviewers']).must_equal(['Christian Bernstein'])
+    _(hash['meta']['reviewer-initials']).must_equal('C.B.')
   end
 
   describe 'Single Resource Object with simple attributes' do
@@ -231,8 +231,8 @@ class JsonapiRenderTest < MiniTest::Spec
       })
     }
 
-    it { DocumentSingleResourceObjectDecorator.new(Article.new(1, 'My Article')).to_json.must_equal_json document }
-    it { DocumentSingleResourceObjectDecorator.for_collection.new([Article.new(1, 'My Article')]).to_json.must_equal_json collection_document }
+    it { _(DocumentSingleResourceObjectDecorator.new(Article.new(1, 'My Article')).to_json).must_equal_json document }
+    it { _(DocumentSingleResourceObjectDecorator.for_collection.new([Article.new(1, 'My Article')]).to_json).must_equal_json collection_document }
   end
 
   describe 'Single Resource Object with complex attributes' do
@@ -307,8 +307,8 @@ class JsonapiRenderTest < MiniTest::Spec
                   %w(Kahnweiler Guernica))
     }
 
-    it { VisualArtistDecorator.new(painter).to_json.must_equal_json document }
-    it { VisualArtistDecorator.for_collection.new([painter]).to_json.must_equal_json collection_document }
+    it { _(VisualArtistDecorator.new(painter).to_json).must_equal_json document }
+    it { _(VisualArtistDecorator.for_collection.new([painter]).to_json).must_equal_json collection_document }
   end
 
 
@@ -371,7 +371,7 @@ class JsonapiRenderTest < MiniTest::Spec
       Painter.new('p1', nil, [], nil, [], nil)
     }
 
-    it { ArtistDecorator.new(painter).to_json.must_equal_json document }
-    it { ArtistDecorator.for_collection.new([painter]).to_json.must_equal_json collection_document }
+    it { _(ArtistDecorator.new(painter).to_json).must_equal_json document }
+    it { _(ArtistDecorator.for_collection.new([painter]).to_json).must_equal_json collection_document }
   end
 end

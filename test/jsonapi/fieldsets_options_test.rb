@@ -13,7 +13,7 @@ class FieldsetsOptionsTest < Minitest::Spec
        { include: 'articles',
          fields:  { 'articles' => 'title,body', 'people' => '' } }].each do |options|
         options = Include.(options, relationships: { 'articles' => 'articles' })
-        options.must_equal(include:  [:id, :attributes, :relationships, :included],
+        _(options).must_equal(include:  [:id, :attributes, :relationships, :included],
                            included: {
                              include:  [:articles],
                              articles: {
@@ -38,7 +38,7 @@ class FieldsetsOptionsTest < Minitest::Spec
        { include: [''] },
        { include: '' }].each do |options|
         options = Include.(options, {})
-        options.must_equal(include:  [:id, :attributes, :relationships, :included],
+        _(options).must_equal(include:  [:id, :attributes, :relationships, :included],
                            included: { include: [] })
       end
     end
@@ -50,7 +50,7 @@ class FieldsetsOptionsTest < Minitest::Spec
        { include: [''], fields:  { articles: ['title,body'],  people: [] } },
        { include: '',   fields:  { 'articles' => 'title,body', 'people' => '' } }].each do |options|
         options = Include.(options, relationships: { '_self' => 'articles' })
-        options.must_equal(include:       [:id, :attributes, :relationships, :included],
+        _(options).must_equal(include:       [:id, :attributes, :relationships, :included],
                            included:      {
                              include: [],
                              people:  {
@@ -69,7 +69,7 @@ class FieldsetsOptionsTest < Minitest::Spec
        { include: [''], fields:  { articles: ['title,body'],  people: ['email'] } },
        { include: '',   fields:  { 'articles' => 'title,body', 'people' => 'email' } }].each do |options|
         options = Include.(options, relationships: { 'author' => 'people', 'articles' => 'articles' })
-        options.must_equal(include:  [:id, :attributes, :relationships, :included],
+        _(options).must_equal(include:  [:id, :attributes, :relationships, :included],
                            included: {
                              include:  [],
                              articles: {
@@ -93,7 +93,7 @@ class FieldsetsOptionsTest < Minitest::Spec
        { include: ['comments'] },
        { include: 'comments' }].each do |options|
         options = Include.(options, {})
-        options.must_equal(include:  [:id, :attributes, :relationships, :included],
+        _(options).must_equal(include:  [:id, :attributes, :relationships, :included],
                            included: {
                              include:  [:comments],
                              comments: {
@@ -109,7 +109,7 @@ class FieldsetsOptionsTest < Minitest::Spec
        { include: ['comments.author.employer'] },
        { include: 'comments.author.employer' }].each do |options|
         options = Include.(options, {})
-        options.must_equal(include:  [:id, :attributes, :relationships, :included],
+        _(options).must_equal(include:  [:id, :attributes, :relationships, :included],
                            included: {
                              include:  [:comments],
                              comments: {
@@ -135,7 +135,7 @@ class FieldsetsOptionsTest < Minitest::Spec
     it 'does not rewrite :include if _json_api_parsed: true' do
       options = Include.({ include:          [:id, :attributes],
                            _json_api_parsed: true }, {})
-      options.must_equal(include:          [:id, :attributes],
+      _(options).must_equal(include:          [:id, :attributes],
                          _json_api_parsed: true)
     end
   end
@@ -143,19 +143,19 @@ class FieldsetsOptionsTest < Minitest::Spec
   describe 'with falsey :include options' do
     it 'does not rewrite include: false' do
       options = Include.({ include: false }, {})
-      options.must_equal(include: false)
+      _(options).must_equal(include: false)
     end
 
     it 'does not rewrite include: nil' do
       options = Include.({ include: nil }, {})
-      options.must_equal(include: nil)
+      _(options).must_equal(include: nil)
     end
   end
 
   describe 'with falsey :fields options' do
     it 'does not parse fields: nil' do
       options = Include.({ fields: nil }, {})
-      options.must_equal(fields: nil)
+      _(options).must_equal(fields: nil)
     end
   end
 end
